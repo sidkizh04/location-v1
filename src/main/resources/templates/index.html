@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{site.title}">RIDE WITH LAAMARI | Location de Prestige</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+
+<nav class="absolute w-full z-20 top-0 text-white p-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="text-2xl font-black italic tracking-tighter">
+            RIDE WITH <span class="text-red-600">LAAMARI</span>
+        </div>
+
+        <div class="flex items-center space-x-8 font-bold uppercase text-sm tracking-widest">
+            <div class="flex space-x-2 border-r border-gray-500 pr-6 mr-2">
+                <a href="?lang=fr" class="hover:text-red-600 transition" title="Français">FR</a>
+                <span class="opacity-50">|</span>
+                <a href="?lang=en" class="hover:text-red-600 transition" title="English">EN</a>
+            </div>
+
+            <a href="#catalogue" class="hover:text-red-600 transition" th:text="#{nav.home}">Accueil</a>
+
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/voitures}" class="hover:text-red-600 transition" th:text="#{nav.admin}">Gestion Admin</a>
+
+            <a sec:authorize="isAnonymous()" th:href="@{/login}" class="bg-red-600 px-5 py-2 rounded-full hover:bg-red-700 transition" th:text="#{nav.login}">Connexion</a>
+
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline">
+                <button type="submit" class="bg-gray-800 px-5 py-2 rounded-full hover:bg-black transition text-white border border-gray-600">
+                    Déconnexion
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<header class="relative h-screen flex items-center justify-center text-white">
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920"
+             class="w-full h-full object-cover" alt="Car Background">
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+    </div>
+
+    <div class="relative z-10 text-center px-4">
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 italic uppercase">
+            RIDE WITH <span class="text-red-600">LAAMARI</span>
+        </h1>
+        <p class="text-xl md:text-2xl font-light tracking-widest mb-8 uppercase" th:text="#{hero.text}">
+            Louez plus qu'une voiture, louez une expérience.
+        </p>
+
+        <div class="flex gap-4 justify-center">
+            <a href="#catalogue" class="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold transition duration-300 shadow-lg" th:text="#{btn.discover}">
+                Découvrir le parc
+            </a>
+        </div>
+    </div>
+</header>
+
+<section id="catalogue" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-black uppercase text-gray-900 tracking-tighter">
+                <span th:text="#{cat.title1}">Notre</span> <span class="text-red-600" th:text="#{cat.title2}">Sélection</span>
+            </h2>
+            <div class="h-1 w-20 bg-red-600 mx-auto mt-4"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div th:each="v : ${voitures}" class="bg-white rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transition duration-300 border border-gray-100">
+                <div class="h-48 bg-gray-200 relative overflow-hidden">
+                    <img th:src="${v.imageUrL != null && !v.imageUrL.isEmpty() ? v.imageUrL : 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'}"
+                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Car Photo">
+                    <div class="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-sm"
+                         th:text="${v.disponible ? #messages.msg('status.available') : #messages.msg('status.rented')}">Status</div>
+                </div>
+
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 leading-tight" th:text="${v.marque}">Marque</h3>
+                            <p class="text-gray-500 font-medium" th:text="${v.modele}">Modèle</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-red-600" th:text="${v.prixParJour + ' €'}">0 €</span>
+                            <p class="text-xs text-gray-400 uppercase font-bold" th:text="#{car.perday}">par jour</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-5 mt-5 flex items-center justify-between">
+                        <div class="flex space-x-4 text-gray-400 text-sm">
+                            <span><i class="fas fa-gas-pump"></i> Essence</span>
+                            <span><i class="fas fa-cog"></i> Auto</span>
+                        </div>
+                        <a th:href="@{/reserver/{id}(id=${v.id})}" class="bg-black text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-800 transition" th:text="#{btn.book}">
+                            Réserver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(voitures)}" class="text-center py-10 text-gray-500 italic" th:text="#{cat.empty}">
+            Aucun véhicule n'est disponible pour le moment. Revenez bientôt !
+        </div>
+    </div>
+</section>
+
+<footer class="bg-black text-white py-10 text-center">
+    <p class="text-gray-500 text-sm">&copy; 2026 RIDE WITH LAAMARI. <span th:text="#{footer.rights}">Tous droits réservés.</span></p>
+</footer>
+
+</body>
+</html>

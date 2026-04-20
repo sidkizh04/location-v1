@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Réserver votre véhicule</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full">
+  <h2 class="text-2xl font-black mb-6 uppercase italic text-center">
+    Réserver la <span class="text-red-600" th:text="${voiture.marque}">Voiture</span>
+  </h2>
+
+  <form th:action="@{/reserver/confirmer}" method="post" th:object="${reservation}" class="space-y-4">
+    <input type="hidden" name="voitureId" th:value="${voiture.id}">
+
+    <div>
+      <label class="block text-sm font-bold mb-1">Date de début</label>
+      <input type="date" th:field="*{dateDebut}" class="w-full border p-2 rounded-lg" required>
+    </div>
+
+    <div>
+      <label class="block text-sm font-bold mb-1">Date de fin</label>
+      <input type="date" th:field="*{dateFin}" class="w-full border p-2 rounded-lg" required>
+    </div>
+
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Tarif journalier : <span class="font-bold text-black" th:text="${voiture.prixParJour} + ' €'"></span></p>
+    </div>
+
+    <button type="submit" class="w-full bg-black text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition">
+      Confirmer la réservation
+    </button>
+  </form>
+</div>
+
+</body>
+</html>

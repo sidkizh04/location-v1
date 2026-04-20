@@ -1,0 +1,25 @@
+<div class="p-8">
+    <h1 class="text-3xl font-bold mb-6">Gestion du parc - RIDE WITH LAAMARI</h1>
+    <a href="/admin/voitures/nouveau" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter une voiture</a>
+
+    <table class="w-full mt-6 border-collapse border">
+        <thead>
+        <tr class="bg-gray-100">
+            <th class="border p-2 text-left">Marque</th>
+            <th class="border p-2 text-left">Modèle</th>
+            <th class="border p-2 text-left">Prix/Jour</th>
+            <th class="border p-2">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${voitures}">
+            <td class="border p-2" th:text="${v.marque}"></td>
+            <td class="border p-2" th:text="${v.modele}"></td>
+            <td class="border p-2" th:text="${v.prixParJour} + ' €'"></td>
+            <td class="border p-2 text-center">
+                <a th:href="@{/admin/voitures/supprimer/{id}(id=${v.id})}" class="text-red-600">Supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

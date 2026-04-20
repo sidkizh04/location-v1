@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | Ajouter une voiture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Ajouter un nouveau véhicule</h2>
+
+    <form th:action="@{/admin/voitures/sauvegarder}" th:object="${voiture}" method="post" class="space-y-4">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700" th:text="#{form.brand}">Marque</label>
+            <input type="text" th:field="*{marque}" class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-red-500 focus:border-red-500" required>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700" th:text="#{form.model}">Modèle</label>
+            <input type="text" th:field="*{modele}" class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-red-500 focus:border-red-500" required>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700" th:text="#{form.price}">Prix/Jour</label>
+            <input type="number" step="0.01" th:field="*{prixParJour}" class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-red-500 focus:border-red-500" required>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700" th:text="#{form.image}">URL de l'image</label>
+            <input type="text" th:field="*{imageUrL}" placeholder="https://..." class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-red-500 focus:border-red-500">
+        </div>
+
+        <div class="pt-4 flex justify-between items-center">
+            <a href="/admin/voitures" class="text-gray-500 hover:underline">Annuler</a>
+            <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-700 shadow-lg" th:text="#{btn.save}">
+                Enregistrer
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
