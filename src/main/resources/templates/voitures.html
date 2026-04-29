@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:dir="${#locale.language == 'ar'} ? 'rtl' : 'ltr'"
+      th:lang="${#locale.language}">
 <head>
   <meta charset="UTF-8"><title>Catalogue - RIDE WITH LAAMARI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -78,13 +80,18 @@
       RIDE WITH <span>LAAMARI</span>
     </a>
     <div class="d-flex align-items-center gap-4">
+      <div class="d-flex align-items-center" style="border-right: 1px solid #555; padding-right: 15px;">
+          <a href="?lang=fr" class="text-secondary text-decoration-none mx-1 hover-danger">FR</a> <span class="text-secondary">|</span>
+          <a href="?lang=en" class="text-secondary text-decoration-none mx-1 hover-danger">EN</a> <span class="text-secondary">|</span>
+          <a href="?lang=ar" class="text-secondary text-decoration-none mx-1 hover-danger">AR</a>
+      </div>
       <a th:href="@{/voitures}" class="nav-link-custom">
-        <i class="fas fa-car me-1"></i>Catalogue
+        <i class="fas fa-car me-1"></i><span th:text="#{nav.home}">Catalogue</span>
       </a>
       <a sec:authorize="hasRole('CLIENT')"
          th:href="@{/client/dashboard}"
          class="nav-link-custom">
-        <i class="fas fa-user me-1"></i>Mon espace
+        <i class="fas fa-user me-1"></i><span th:text="#{nav.myspace}">Mon espace</span>
       </a>
       <a sec:authorize="hasRole('CLIENT')"
          th:href="@{/client/messages}"
@@ -94,17 +101,17 @@
       <a sec:authorize="hasRole('ADMIN')"
          th:href="@{/admin/dashboard}"
          class="nav-link-custom">
-        <i class="fas fa-tachometer-alt me-1"></i>Admin
+        <i class="fas fa-tachometer-alt me-1"></i><span th:text="#{nav.admin}">Admin</span>
       </a>
       <a sec:authorize="isAnonymous()"
          th:href="@{/login}"
-         class="btn-connexion">
+         class="btn-connexion" th:text="#{nav.login}">
         Connexion
       </a>
       <form sec:authorize="isAuthenticated()"
             th:action="@{/logout}" method="post" class="d-inline">
         <button type="submit" class="btn-logout">
-          <i class="fas fa-sign-out-alt me-1"></i>Deconnexion
+          <i class="fas fa-sign-out-alt me-1"></i><span th:text="#{nav.logout}">Deconnexion</span>
         </button>
       </form>
     </div>
@@ -113,8 +120,8 @@
 
 <!-- PAGE HEADER -->
 <div class="page-header">
-  <h1>NOTRE <span>CATALOGUE</span></h1>
-  <p class="text-muted mt-2">Choisissez votre vehicule ideal</p>
+  <h1><span th:text="#{voitures.header1}">NOTRE</span> <span th:text="#{voitures.header2}">CATALOGUE</span></h1>
+  <p class="text-muted mt-2" th:text="#{voitures.subtitle}">Choisissez votre vehicule ideal</p>
 </div>
 
 <div class="container py-5">
@@ -125,32 +132,32 @@
       <div class="col-md-4">
         <input type="text" id="searchInput"
                class="form-control"
-               placeholder="🔍 Rechercher une marque, modele..."
+               th:placeholder="#{voitures.search_ph}"
                onkeyup="filtrer()">
       </div>
       <div class="col-md-3">
         <select id="carburantFilter" class="form-select"
                 onchange="filtrer()">
-          <option value="">Tous les carburants</option>
-          <option value="Essence">Essence</option>
-          <option value="Diesel">Diesel</option>
-          <option value="Hybride">Hybride</option>
-          <option value="Electrique">Electrique</option>
+          <option value="" th:text="#{voitures.all_fuels}">Tous les carburants</option>
+          <option value="Essence" th:text="#{voitures.fuel_petrol}">Essence</option>
+          <option value="Diesel" th:text="#{voitures.fuel_diesel}">Diesel</option>
+          <option value="Hybride" th:text="#{voitures.fuel_hybrid}">Hybride</option>
+          <option value="Electrique" th:text="#{voitures.fuel_electric}">Electrique</option>
         </select>
       </div>
       <div class="col-md-3">
         <select id="prixFilter" class="form-select"
                 onchange="filtrer()">
-          <option value="">Tous les prix</option>
-          <option value="50">Moins de 50 MAD/j</option>
-          <option value="100">Moins de 100 MAD/j</option>
-          <option value="200">Moins de 200 MAD/j</option>
+          <option value="" th:text="#{voitures.all_prices}">Tous les prix</option>
+          <option value="50" th:text="#{voitures.price_50}">Moins de 50 MAD/j</option>
+          <option value="100" th:text="#{voitures.price_100}">Moins de 100 MAD/j</option>
+          <option value="200" th:text="#{voitures.price_200}">Moins de 200 MAD/j</option>
         </select>
       </div>
       <div class="col-md-2">
         <button onclick="resetFiltres()"
                 class="btn btn-outline-secondary w-100">
-          <i class="fas fa-times me-1"></i>Reset
+          <i class="fas fa-times me-1"></i><span th:text="#{voitures.reset}">Reset</span>
         </button>
       </div>
     </div>
@@ -159,7 +166,7 @@
   <!-- RÉSULTAT VIDE -->
   <div th:if="${#lists.isEmpty(voitures)}" class="text-center py-5">
     <i class="fas fa-car fa-3x text-muted mb-3 d-block"></i>
-    <p class="text-muted">Aucun vehicule disponible pour le moment.</p>
+    <p class="text-muted" th:text="#{voitures.empty}">Aucun vehicule disponible pour le moment.</p>
   </div>
 
   <!-- GRILLE VOITURES -->
@@ -181,10 +188,10 @@
           <div class="no-img" th:unless="${v.imageUrL != null}">
             <i class="fas fa-car"></i>
           </div>
-          <span th:if="${v.disponible}" class="disponible-badge">
+          <span th:if="${v.disponible}" class="disponible-badge" th:text="#{voitures.status_avail}">
                         Disponible
                     </span>
-          <span th:unless="${v.disponible}" class="indispo-badge">
+          <span th:unless="${v.disponible}" class="indispo-badge" th:text="#{voitures.status_unavail}">
                         Indisponible
                     </span>
         </div>
@@ -201,7 +208,7 @@
             <div class="text-end">
               <div class="price"
                    th:text="${v.prixParJour + ' MAD'}"></div>
-              <small class="text-muted">PAR JOUR</small>
+              <small class="text-muted" th:text="#{car.perday}">PAR JOUR</small>
             </div>
           </div>
 
@@ -224,16 +231,16 @@
           <div class="d-flex gap-2">
             <a th:href="@{/voitures/{id}(id=${v.id})}"
                class="btn-detail flex-grow-1 text-center">
-              <i class="fas fa-eye me-1"></i>Voir detail
+              <i class="fas fa-eye me-1"></i><span th:text="#{btn.viewdetail}">Voir detail</span>
             </a>
             <a th:if="${v.disponible}"
                th:href="@{/client/reserver/{id}(id=${v.id})}"
                class="btn-reserver flex-grow-1 text-center">
-              <i class="fas fa-calendar me-1"></i>Reserver
+              <i class="fas fa-calendar me-1"></i><span th:text="#{btn.book}">Reserver</span>
             </a>
             <span th:unless="${v.disponible}"
                   class="btn-reserver flex-grow-1 text-center"
-                  style="opacity:.5; cursor:not-allowed;">
+                  style="opacity:.5; cursor:not-allowed;" th:text="#{voitures.status_unavail}">
                             Indisponible
                         </span>
           </div>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:dir="${#locale.language == 'ar'} ? 'rtl' : 'ltr'"
+      th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
     <title th:text="${voiture.marque + ' ' + voiture.modele + ' - LAAMARI'}">
@@ -36,25 +38,32 @@
             RIDE WITH <span class="text-red-600">LAAMARI</span>
         </a>
         <div class="flex items-center space-x-6 text-sm font-bold uppercase">
+            <div class="flex space-x-2 border-r border-gray-600 pr-6">
+                <a href="?lang=fr" class="text-gray-400 hover:text-red-600 transition">FR</a>
+                <span class="text-gray-600">|</span>
+                <a href="?lang=en" class="text-gray-400 hover:text-red-600 transition">EN</a>
+                <span class="text-gray-600">|</span>
+                <a href="?lang=ar" class="text-gray-400 hover:text-red-600 transition">AR</a>
+            </div>
             <a th:href="@{/voitures}"
                class="text-gray-300 hover:text-red-600 transition">
-                <i class="fas fa-arrow-left mr-2"></i>Catalogue
+                <i class="fas fa-arrow-left mr-2"></i><span th:text="#{nav.home}">Catalogue</span>
             </a>
             <a sec:authorize="hasRole('CLIENT')"
                th:href="@{/client/dashboard}"
                class="text-gray-300 hover:text-red-600 transition">
-                Mon espace
+                <span th:text="#{nav.myspace}">Mon espace</span>
             </a>
             <a sec:authorize="isAnonymous()"
                th:href="@{/login}"
-               class="bg-red-600 px-5 py-2 rounded-full text-white hover:bg-red-700 transition">
+               class="bg-red-600 px-5 py-2 rounded-full text-white hover:bg-red-700 transition" th:text="#{nav.login}">
                 Connexion
             </a>
             <form sec:authorize="isAuthenticated()"
                   th:action="@{/logout}" method="post" class="inline">
                 <button type="submit"
                         class="bg-gray-800 px-5 py-2 rounded-full text-white
-                               hover:bg-red-600 transition border border-gray-600">
+                               hover:bg-red-600 transition border border-gray-600" th:text="#{nav.logout}">
                     Déconnexion
                 </button>
             </form>
@@ -76,11 +85,11 @@
     <div class="absolute top-8 right-8">
         <span th:if="${voiture.disponible}"
               class="bg-green-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
-            <i class="fas fa-check-circle mr-2"></i>Disponible
+            <i class="fas fa-check-circle mr-2"></i><span th:text="#{voitures.status_avail}">Disponible</span>
         </span>
         <span th:unless="${voiture.disponible}"
               class="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
-            <i class="fas fa-times-circle mr-2"></i>Indisponible
+            <i class="fas fa-times-circle mr-2"></i><span th:text="#{voitures.status_unavail}">Indisponible</span>
         </span>
     </div>
 
@@ -122,7 +131,7 @@
             <!-- Description -->
             <div th:if="${voiture.description != null}"
                  class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
-                <h2 class="text-2xl font-black uppercase mb-4">
+                <h2 class="text-2xl font-black uppercase mb-4" th:text="#{detail.about}">
                     À propos de ce véhicule
                 </h2>
                 <p class="text-gray-600 leading-relaxed text-lg"
@@ -131,7 +140,7 @@
 
             <!-- Spécifications -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
-                <h2 class="text-2xl font-black uppercase mb-6">Caractéristiques</h2>
+                <h2 class="text-2xl font-black uppercase mb-6" th:text="#{detail.specs}">Caractéristiques</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
                     <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
@@ -140,35 +149,35 @@
                                      'fas fa-gas-pump text-red-500 text-3xl mb-3 block')"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.carburant != null ? voiture.carburant : 'Essence'}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Carburant</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{voitures.all_fuels}">Carburant</div>
                     </div>
 
                     <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-cog text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.transmission != null ? voiture.transmission : 'Automatique'}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Transmission</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.transmission}">Transmission</div>
                     </div>
 
                     <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-users text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.nombrePlaces != null ? voiture.nombrePlaces : 5}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Places</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.seats}">Places</div>
                     </div>
 
                     <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-door-open text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.nombrePortes != null ? voiture.nombrePortes : 4}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Portes</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.doors}">Portes</div>
                     </div>
 
                     <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-snowflake text-blue-400 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.climatisation != null ? voiture.climatisation : 'Oui'}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Climatisation</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.ac}">Climatisation</div>
                     </div>
 
                     <div th:if="${voiture.kilometrage != null}"
@@ -176,52 +185,52 @@
                         <i class="fas fa-tachometer-alt text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900"
                              th:text="${voiture.kilometrage + ' km'}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Kilometrage</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.mileage}">Kilometrage</div>
                     </div>
 
                     <div th:if="${voiture.annee != null}"
                          class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-calendar text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900" th:text="${voiture.annee}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Annee</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.year}">Annee</div>
                     </div>
 
                     <div th:if="${voiture.couleur != null}"
                          class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
                         <i class="fas fa-palette text-gray-600 text-3xl mb-3 block"></i>
                         <div class="font-black text-gray-900" th:text="${voiture.couleur}"></div>
-                        <div class="text-gray-400 text-xs uppercase mt-1">Couleur</div>
+                        <div class="text-gray-400 text-xs uppercase mt-1" th:text="#{detail.color}">Couleur</div>
                     </div>
                 </div>
             </div>
 
             <!-- Inclus -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
-                <h2 class="text-2xl font-black uppercase mb-6">Inclus dans la location</h2>
+                <h2 class="text-2xl font-black uppercase mb-6" th:text="#{detail.included}">Inclus dans la location</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>Assurance incluse</span>
+                        <span th:text="#{detail.inc_insur}">Assurance incluse</span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>Assistance 24/7</span>
+                        <span th:text="#{detail.inc_assist}">Assistance 24/7</span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>Kilométrage illimité</span>
+                        <span th:text="#{detail.inc_km}">Kilométrage illimité</span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>Nettoyage inclus</span>
+                        <span th:text="#{detail.inc_clean}">Nettoyage inclus</span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>GPS disponible</span>
+                        <span th:text="#{detail.inc_gps}">GPS disponible</span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-700">
                         <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        <span>Livraison possible</span>
+                        <span th:text="#{detail.inc_deliv}">Livraison possible</span>
                     </div>
                 </div>
             </div>
@@ -231,7 +240,7 @@
             ══════════════════════════════════════════════ -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-black uppercase">
+                    <h2 class="text-2xl font-black uppercase" th:text="#{detail.reviews}">
                         Avis clients
                     </h2>
                     <!-- Résumé note globale -->
@@ -248,7 +257,7 @@
                             </span>
                         </div>
                         <div class="text-gray-400 text-xs mt-1"
-                             th:text="${nombreAvis + ' avis vérifiés'}"></div>
+                             th:text="${nombreAvis + ' '} + #{detail.verified_reviews}"></div>
                     </div>
                 </div>
 
@@ -256,8 +265,8 @@
                 <div th:if="${#lists.isEmpty(avisApprouves)}"
                      class="text-center py-10 text-gray-400">
                     <i class="far fa-star text-4xl mb-3 block"></i>
-                    <p>Aucun avis pour le moment.</p>
-                    <p class="text-sm mt-1">
+                    <p th:text="#{detail.no_reviews}">Aucun avis pour le moment.</p>
+                    <p class="text-sm mt-1" th:text="#{detail.be_first}">
                         Soyez le premier à donner votre avis après votre location !
                     </p>
                 </div>
@@ -323,7 +332,7 @@
                                          text-green-700 text-xs px-2 py-1 rounded-full
                                          border border-green-200">
                                 <i class="fas fa-check-circle text-xs"></i>
-                                Location vérifiée
+                                <span th:text="#{detail.verified_rent}">Location vérifiée</span>
                             </span>
                         </div>
                     </div>
@@ -342,7 +351,7 @@
                     <div class="text-center mb-6">
                         <div class="text-5xl font-black text-red-500"
                              th:text="${voiture.prixParJour + ' MAD'}"></div>
-                        <div class="text-gray-400 uppercase text-sm tracking-widest mt-1">
+                        <div class="text-gray-400 uppercase text-sm tracking-widest mt-1" th:text="#{car.perday}">
                             par jour
                         </div>
                         <!-- Note dans la card prix -->
@@ -360,20 +369,20 @@
 
                     <!-- Calcul rapide -->
                     <div class="bg-gray-900 rounded-xl p-4 mb-6">
-                        <label class="text-gray-400 text-sm mb-2 block">
+                        <label class="text-gray-400 text-sm mb-2 block" th:text="#{detail.quick_est}">
                             Estimation rapide
                         </label>
                         <select id="dureeSelect" onchange="calculer()"
                                 class="w-full bg-gray-800 text-white border
                                        border-gray-700 rounded-lg p-2 mb-3">
-                            <option value="1">1 jour</option>
-                            <option value="3">3 jours</option>
-                            <option value="7">1 semaine</option>
-                            <option value="14">2 semaines</option>
-                            <option value="30">1 mois</option>
+                            <option value="1" th:text="#{detail.day1}">1 jour</option>
+                            <option value="3" th:text="#{detail.day3}">3 jours</option>
+                            <option value="7" th:text="#{detail.week1}">1 semaine</option>
+                            <option value="14" th:text="#{detail.week2}">2 semaines</option>
+                            <option value="30" th:text="#{detail.month1}">1 mois</option>
                         </select>
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-sm">Total estimé :</span>
+                            <span class="text-gray-400 text-sm" th:text="#{detail.total_est}">Total estimé :</span>
                             <span id="totalEstime"
                                   class="text-red-500 font-black text-xl"></span>
                         </div>
@@ -386,29 +395,29 @@
                            class="block w-full bg-red-600 hover:bg-red-700 text-white
                                   text-center py-4 rounded-xl font-black text-lg
                                   transition duration-300 uppercase">
-                            <i class="fas fa-lock mr-2"></i>Connectez-vous
+                            <i class="fas fa-lock mr-2"></i><span th:text="#{detail.login_book}">Connectez-vous</span>
                         </a>
                         <a sec:authorize="hasRole('CLIENT')"
                            th:href="@{/client/reserver/{id}(id=${voiture.id})}"
                            class="block w-full bg-red-600 hover:bg-red-700 text-white
                                   text-center py-4 rounded-xl font-black text-lg
                                   transition duration-300 uppercase">
-                            <i class="fas fa-calendar-check mr-2"></i>Réserver maintenant
+                            <i class="fas fa-calendar-check mr-2"></i><span th:text="#{detail.book_now}">Réserver maintenant</span>
                         </a>
                         <p class="text-gray-500 text-xs text-center mt-3">
-                            <i class="fas fa-lock mr-1"></i>Réservation sécurisée
+                            <i class="fas fa-lock mr-1"></i><span th:text="#{detail.secure_book}">Réservation sécurisée</span>
                         </p>
                     </div>
                     <div th:unless="${voiture.disponible}"
                          class="bg-gray-800 text-gray-500 text-center py-4
                                 rounded-xl font-black text-lg cursor-not-allowed">
-                        <i class="fas fa-times-circle mr-2"></i>Indisponible
+                        <i class="fas fa-times-circle mr-2"></i><span th:text="#{voitures.status_unavail}">Indisponible</span>
                     </div>
                 </div>
 
                 <!-- Contact -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="font-black uppercase mb-4">Une question ?</h3>
+                    <h3 class="font-black uppercase mb-4" th:text="#{detail.question}">Une question ?</h3>
                     <div class="space-y-3">
                         <a href="tel:+212600000000"
                            class="flex items-center gap-3 text-gray-600
@@ -427,7 +436,7 @@
                                         flex items-center justify-center">
                                 <i class="fas fa-comment text-red-600"></i>
                             </div>
-                            <span class="font-medium">Envoyer un message</span>
+                            <span class="font-medium" th:text="#{detail.send_msg}">Envoyer un message</span>
                         </a>
                     </div>
                 </div>
@@ -438,7 +447,7 @@
 
     <!-- AUTRES VOITURES -->
     <div th:if="${!#lists.isEmpty(autresVoitures)}" class="mt-16">
-        <h2 class="text-3xl font-black uppercase mb-8">
+        <h2 class="text-3xl font-black uppercase mb-8" th:text="#{detail.you_may_like}">
             Vous aimerez aussi <span class="text-red-600">...</span>
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -469,7 +478,7 @@
                         </span>
                         <a th:href="@{/voitures/{id}(id=${v.id})}"
                            class="bg-black text-white px-4 py-2 rounded-lg text-sm
-                                  font-bold hover:bg-red-600 transition">
+                                  font-bold hover:bg-red-600 transition" th:text="#{btn.viewdetail}">
                             Voir détail
                         </a>
                     </div>

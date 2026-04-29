@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:dir="${#locale.language == 'ar'} ? 'rtl' : 'ltr'"
+      th:lang="${#locale.language}">
 <head>
-    <meta charset="UTF-8"><title>Inscription - LAAMARI</title>
+    <meta charset="UTF-8"><title th:text="#{signup.title}">Inscription - LAAMARI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -39,24 +41,30 @@
 </head>
 <body>
 <div class="card">
-    <div class="brand"><span>RIDE WITH </span>LAAMARI</div>
+    <div class="brand"><span th:text="#{login.brand1}">RIDE WITH </span><span th:text="#{login.brand2}">LAAMARI</span></div>
+
+    <div class="d-flex justify-content-center mb-4 text-secondary" style="font-size: 0.9rem;">
+        <a href="?lang=fr" class="text-secondary text-decoration-none mx-2">FR</a> |
+        <a href="?lang=en" class="text-secondary text-decoration-none mx-2">EN</a> |
+        <a href="?lang=ar" class="text-secondary text-decoration-none mx-2">AR</a>
+    </div>
 
     <!-- Message succès après inscription -->
     <div th:if="${param.succes}" class="success-box">
         <i class="fas fa-envelope-open-text d-block"></i>
-        <h5 class="text-white fw-bold">Compte créé avec succès !</h5>
-        <p class="text-white-50 mb-3" style="font-size:.9rem">
+        <h5 class="text-white fw-bold" th:text="#{signup.success}">Compte créé avec succès !</h5>
+        <p class="text-white-50 mb-3" style="font-size:.9rem" th:utext="#{signup.success_desc}">
             Un email de confirmation a été envoyé à votre adresse.<br>
             Cliquez sur le lien pour activer votre compte.
         </p>
         <a th:href="@{/login}" class="btn btn-red">
-            <i class="fas fa-sign-in-alt me-2"></i>Aller à la connexion
+            <i class="fas fa-sign-in-alt me-2"></i><span th:text="#{signup.goto_login}">Aller à la connexion</span>
         </a>
     </div>
 
     <!-- Formulaire (caché après succès) -->
     <div th:unless="${param.succes}">
-        <p class="text-muted text-center mb-4" style="font-size:.9rem">
+        <p class="text-muted text-center mb-4" style="font-size:.9rem" th:text="#{signup.subtitle}">
             Créez votre compte en quelques secondes
         </p>
 
@@ -67,39 +75,39 @@
         <form th:action="@{/inscription}" method="post">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Nom *</label>
+                    <label class="form-label" th:text="#{signup.nom}">Nom *</label>
                     <div class="input-icon">
                         <i class="fas fa-user"></i>
                         <input type="text" name="nom" class="form-control"
-                               placeholder="Benali" required>
+                               th:placeholder="#{signup.nom_ph}" required>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Prenom *</label>
+                    <label class="form-label" th:text="#{signup.prenom}">Prenom *</label>
                     <div class="input-icon">
                         <i class="fas fa-user"></i>
                         <input type="text" name="prenom" class="form-control"
-                               placeholder="Ahmed" required>
+                               th:placeholder="#{signup.prenom_ph}" required>
                     </div>
                 </div>
             </div>
 
             <div class="mb-3 mt-3">
-                <label class="form-label">Adresse email *</label>
+                <label class="form-label" th:text="#{signup.email}">Adresse email *</label>
                 <div class="input-icon">
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="email" class="form-control"
-                           placeholder="ahmed@email.com" required>
+                           th:placeholder="#{signup.email_ph}" required>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Mot de passe *</label>
+                <label class="form-label" th:text="#{signup.password}">Mot de passe *</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="password" id="password"
                            class="form-control"
-                           placeholder="Minimum 6 caracteres"
+                           th:placeholder="#{signup.password_ph}"
                            minlength="6" required
                            oninput="checkStrength(this.value)">
                 </div>
@@ -108,44 +116,48 @@
             </div>
 
             <div class="mb-4">
-                <label class="form-label">Confirmer le mot de passe *</label>
+                <label class="form-label" th:text="#{signup.confirm_password}">Confirmer le mot de passe *</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="confirmPassword"
                            id="confirmPassword" class="form-control"
-                           placeholder="Repetez le mot de passe"
+                           th:placeholder="#{signup.confirm_password_ph}"
                            required oninput="checkMatch()">
                 </div>
                 <small id="matchText" class="text-muted"></small>
             </div>
 
             <button type="submit" class="btn btn-red">
-                <i class="fas fa-user-plus me-2"></i>Creer mon compte
+                <i class="fas fa-user-plus me-2"></i><span th:text="#{signup.btn}">Creer mon compte</span>
             </button>
         </form>
 
         <hr class="divider">
         <p class="text-center text-muted mb-0" style="font-size:.9rem">
-            Deja un compte ?
-            <a th:href="@{/login}" class="link-red">Se connecter</a>
+            <span th:text="#{signup.already_account}">Deja un compte ?</span>
+            <a th:href="@{/login}" class="link-red" th:text="#{signup.login}">Se connecter</a>
         </p>
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     function checkStrength(val) {
         const bar = document.getElementById('strengthBar');
         const text = document.getElementById('strengthText');
+        const msgShort = /*[[#{signup.pwd_short}]]*/ 'Trop court';
+        const msgMed = /*[[#{signup.pwd_medium}]]*/ 'Moyen';
+        const msgStrong = /*[[#{signup.pwd_strong}]]*/ 'Fort';
+
         if (val.length === 0) { bar.style.width='0'; text.textContent=''; return; }
         if (val.length < 6) {
             bar.style.width='30%'; bar.className='strength-bar bg-danger';
-            text.textContent='Trop court'; text.className='text-danger small';
+            text.textContent=msgShort; text.className='text-danger small';
         } else if (val.length < 10) {
             bar.style.width='60%'; bar.className='strength-bar bg-warning';
-            text.textContent='Moyen'; text.className='text-warning small';
+            text.textContent=msgMed; text.className='text-warning small';
         } else {
             bar.style.width='100%'; bar.className='strength-bar bg-success';
-            text.textContent='Fort'; text.className='text-success small';
+            text.textContent=msgStrong; text.className='text-success small';
         }
     }
 
@@ -153,12 +165,15 @@
         const p1 = document.getElementById('password').value;
         const p2 = document.getElementById('confirmPassword').value;
         const text = document.getElementById('matchText');
+        const msgMatch = /*[[#{signup.pwd_match}]]*/ 'Les mots de passe correspondent';
+        const msgNoMatch = /*[[#{signup.pwd_nomatch}]]*/ 'Les mots de passe ne correspondent pas';
+
         if (p2.length === 0) { text.textContent=''; return; }
         if (p1 === p2) {
-            text.textContent='Les mots de passe correspondent';
+            text.textContent=msgMatch;
             text.className='text-success small';
         } else {
-            text.textContent='Les mots de passe ne correspondent pas';
+            text.textContent=msgNoMatch;
             text.className='text-danger small';
         }
     }

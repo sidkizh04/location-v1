@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:dir="${#locale.language == 'ar'} ? 'rtl' : 'ltr'"
+      th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Admin</title>
@@ -46,6 +48,12 @@
 <!-- SIDEBAR -->
 <div class="sidebar">
     <div class="brand"><i class="fas fa-car me-2"></i>LAAMARI ADMIN</div>
+
+    <div class="d-flex justify-content-center mb-4 text-secondary" style="font-size: 0.9rem;">
+        <a href="?lang=fr" class="text-secondary text-decoration-none mx-1">FR</a> |
+        <a href="?lang=en" class="text-secondary text-decoration-none mx-1">EN</a> |
+        <a href="?lang=ar" class="text-secondary text-decoration-none mx-1">AR</a>
+    </div>
 
     <a th:href="@{/admin/dashboard}" class="active">
         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
