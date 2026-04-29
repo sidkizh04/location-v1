@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Formulaire Voiture</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #0d0d0d; color: #fff; }
+        .sidebar { background: #111; min-height: 100vh; padding: 20px;
+            width: 240px; position: fixed; }
+        .sidebar .brand { color: #e63946; font-weight: 900;
+            font-size: 1.2rem; margin-bottom: 30px; }
+        .sidebar a { color: #aaa; text-decoration: none; display: block;
+            padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; }
+        .sidebar a:hover { background: #e63946; color: #fff; }
+        .sidebar .logout-btn { color: #aaa; background: none; border: none;
+            width: 100%; text-align: left; padding: 10px 15px;
+            border-radius: 8px; cursor: pointer; }
+        .sidebar .logout-btn:hover { background: #e63946; color: #fff; }
+        .main-content { margin-left: 240px; padding: 30px; }
+        .form-card { background: #1a1a1a; border-radius: 12px;
+            padding: 30px; max-width: 750px; }
+        .form-control, .form-select { background: #2a2a2a;
+            border: 1px solid #444; color: #fff; }
+        .form-control:focus, .form-select:focus { background: #2a2a2a;
+            color: #fff; border-color: #e63946; box-shadow: none; }
+        .form-label { color: #aaa; }
+        .btn-red { background: #e63946; color: #fff; border: none; }
+        .btn-red:hover { background: #c1121f; color: #fff; }
+        .preview-img { width: 100%; max-height: 200px; object-fit: cover;
+            border-radius: 8px; margin-top: 10px; }
+        .section-title { color: #e63946; font-weight: 700;
+            border-bottom: 1px solid #2a2a2a; padding-bottom: 10px;
+            margin-bottom: 20px; margin-top: 25px; }
+        .carburant-grid { display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; }
+        .carburant-btn { background: #2a2a2a; border: 2px solid #444;
+            color: #aaa; padding: 12px; border-radius: 10px;
+            cursor: pointer; text-align: center; transition: all .2s; }
+        .carburant-btn:hover { border-color: #e63946; }
+        .carburant-btn.selected { border-color: #e63946; color: #fff;
+            background: rgba(230,57,70,.15); }
+        .carburant-btn i { display: block; font-size: 1.3rem;
+            margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="brand"><i class="fas fa-car"></i> LAAMARI ADMIN</div>
+    <a th:href="@{/admin/dashboard}">
+        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+    </a>
+    <a th:href="@{/admin/voitures}" class="active">
+        <i class="fas fa-car me-2"></i>Voitures
+    </a>
+    <a th:href="@{/admin/reservations}">
+        <i class="fas fa-calendar me-2"></i>Reservations
+    </a>
+    <a th:href="@{/admin/messages}">
+        <i class="fas fa-envelope me-2"></i>Messages
+    </a>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-btn">
+            <i class="fas fa-sign-out-alt me-2"></i>Deconnexion
+        </button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h2 class="mb-4">
+        <span th:if="${voiture.id == null}">Ajouter une voiture</span>
+        <span th:unless="${voiture.id == null}">Modifier la voiture</span>
+    </h2>
+    <div class="form-card">
+        <form th:action="@{/admin/voitures/sauvegarder}"
+              th:object="${voiture}" method="post"
+              enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{imageUrL}">
+
+            <!-- INFOS PRINCIPALES -->
+            <div class="section-title">
+                <i class="fas fa-car me-2"></i>Informations principales
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Marque *</label>
+                    <input type="text" class="form-control"
+                           th:field="*{marque}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Modele *</label>
+                    <input type="text" class="form-control"
+                           th:field="*{modele}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Prix par jour (€) *</label>
+                    <input type="number" step="0.01" class="form-control"
+                           th:field="*{prixParJour}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Annee</label>
+                    <input type="number" class="form-control"
+                           th:field="*{annee}"
+                           placeholder="Ex: 2023">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Couleur</label>
+                    <input type="text" class="form-control"
+                           th:field="*{couleur}"
+                           placeholder="Ex: Noir, Blanc...">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Kilometrage (km)</label>
+                    <input type="number" class="form-control"
+                           th:field="*{kilometrage}"
+                           placeholder="Ex: 15000">
+                </div>
+            </div>
+
+            <!-- CARACTERISTIQUES -->
+            <div class="section-title">
+                <i class="fas fa-cog me-2"></i>Caracteristiques
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Transmission</label>
+                    <select class="form-select" th:field="*{transmission}">
+                        <option value="Automatique">Automatique</option>
+                        <option value="Manuelle">Manuelle</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Nb Places</label>
+                    <input type="number" class="form-control"
+                           th:field="*{nombrePlaces}"
+                           min="2" max="9">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Nb Portes</label>
+                    <input type="number" class="form-control"
+                           th:field="*{nombrePortes}"
+                           min="2" max="5">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Climatisation</label>
+                    <select class="form-select" th:field="*{climatisation}">
+                        <option value="Oui">Oui</option>
+                        <option value="Non">Non</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Disponible</label>
+                    <select class="form-select" th:field="*{disponible}">
+                        <option value="true">Oui</option>
+                        <option value="false">Non</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- CARBURANT -->
+            <div class="section-title">
+                <i class="fas fa-gas-pump me-2"></i>Type de carburant
+            </div>
+            <input type="hidden" th:field="*{carburant}"
+                   id="carburantInput">
+            <div class="carburant-grid mb-3">
+                <div class="carburant-btn"
+                     th:classappend="${voiture.carburant == 'Essence'} ? 'selected' : ''"
+                     id="btn-Essence" onclick="selectCarburant('Essence')">
+                    <i class="fas fa-gas-pump"></i>Essence
+                </div>
+                <div class="carburant-btn"
+                     th:classappend="${voiture.carburant == 'Diesel'} ? 'selected' : ''"
+                     id="btn-Diesel" onclick="selectCarburant('Diesel')">
+                    <i class="fas fa-oil-can"></i>Diesel
+                </div>
+                <div class="carburant-btn"
+                     th:classappend="${voiture.carburant == 'Hybride'} ? 'selected' : ''"
+                     id="btn-Hybride" onclick="selectCarburant('Hybride')">
+                    <i class="fas fa-leaf"></i>Hybride
+                </div>
+                <div class="carburant-btn"
+                     th:classappend="${voiture.carburant == 'Electrique'} ? 'selected' : ''"
+                     id="btn-Electrique" onclick="selectCarburant('Electrique')">
+                    <i class="fas fa-bolt"></i>Electrique
+                </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="section-title">
+                <i class="fas fa-align-left me-2"></i>Description
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" th:field="*{description}"
+                          rows="3"
+                          placeholder="Decrivez la voiture..."></textarea>
+            </div>
+
+            <!-- PHOTO -->
+            <div class="section-title">
+                <i class="fas fa-camera me-2"></i>Photo
+            </div>
+            <div class="mb-4">
+                <input type="file" class="form-control" name="photo"
+                       accept="image/*" onchange="previewImage(this)">
+                <img id="preview" th:if="${voiture.imageUrL != null}"
+                     th:src="${voiture.imageUrL}" class="preview-img">
+                <img id="preview" th:unless="${voiture.imageUrL != null}"
+                     src="" class="preview-img" style="display:none">
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-red">
+                    <i class="fas fa-save me-2"></i>Sauvegarder
+                </button>
+                <a th:href="@{/admin/voitures}"
+                   class="btn btn-outline-light">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const carburantActuel = [[${voiture.carburant}]];
+    if (carburantActuel) selectCarburant(carburantActuel);
+    else selectCarburant('Essence');
+
+    function selectCarburant(type) {
+        ['Essence','Diesel','Hybride','Electrique'].forEach(t => {
+            const btn = document.getElementById('btn-' + t);
+            if (btn) btn.classList.remove('selected');
+        });
+        const selected = document.getElementById('btn-' + type);
+        if (selected) selected.classList.add('selected');
+        document.getElementById('carburantInput').value = type;
+    }
+
+    function previewImage(input) {
+        const preview = document.getElementById('preview');
+        if (input.files && input.files[0]) {
+            preview.src = URL.createObjectURL(input.files[0]);
+            preview.style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

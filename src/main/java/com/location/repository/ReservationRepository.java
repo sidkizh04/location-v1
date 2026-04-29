@@ -1,9 +1,11 @@
 package com.location.repository;
 
 import com.location.model.Reservation;
+import com.location.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+    List<Reservation> findByUtilisateur(Utilisateur utilisateur);
+    List<Reservation> findByStatut(String statut);
 }

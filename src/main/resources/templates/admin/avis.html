@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><title>Gestion des avis - LAAMARI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background: #0d0d0d; color: #fff; font-family: 'Segoe UI', sans-serif; }
+    .navbar-custom { background: #111; padding: 15px 40px;
+      display: flex; align-items: center; justify-content: space-between; }
+    .brand { color: #e63946; font-weight: 900; font-size: 1.3rem; }
+    .nav-links a { color: #aaa; text-decoration: none; margin-left: 25px; }
+    .nav-links a:hover, .nav-links a.active { color: #e63946; }
+
+    .main { padding: 40px; }
+
+    /* ── Stats ── */
+    .stat-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border-top: 3px solid #333;
+    }
+    .stat-card.attente { border-color: #ffc107; }
+    .stat-card.approuve { border-color: #28a745; }
+    .stat-card.rejete   { border-color: #dc3545; }
+    .stat-card.total    { border-color: #e63946; }
+    .stat-card .num { font-size: 2rem; font-weight: 900; }
+    .stat-card.attente .num { color: #ffc107; }
+    .stat-card.approuve .num { color: #28a745; }
+    .stat-card.rejete .num   { color: #dc3545; }
+    .stat-card.total .num    { color: #e63946; }
+
+    /* ── Filtres ── */
+    .filter-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #aaa;
+      border-radius: 20px;
+      padding: 6px 18px;
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: #e63946; color: #fff; }
+    .filter-btn.active {
+      background: #e63946;
+      border-color: #e63946;
+      color: #fff;
+    }
+
+    /* ── Carte avis ── */
+    .avis-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid #333;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .avis-card.EN_ATTENTE { border-color: #ffc107; }
+    .avis-card.APPROUVE   { border-color: #28a745; }
+    .avis-card.REJETE     { border-color: #dc3545; }
+
+    .stars { color: #ffc107; font-size: 1rem; }
+    .stars .empty { color: #444; }
+
+    .badge-EN_ATTENTE { background: #ffc107; color: #000; }
+    .badge-APPROUVE   { background: #28a745; }
+    .badge-REJETE     { background: #dc3545; }
+
+    /* ── Boutons action ── */
+    .btn-approuver {
+      background: transparent;
+      border: 1px solid #28a745;
+      color: #28a745;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-approuver:hover { background: #28a745; color: #fff; }
+
+    .btn-rejeter {
+      background: transparent;
+      border: 1px solid #ffc107;
+      color: #ffc107;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-rejeter:hover { background: #ffc107; color: #000; }
+
+    .btn-supprimer {
+      background: transparent;
+      border: 1px solid #dc3545;
+      color: #dc3545;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-supprimer:hover { background: #dc3545; color: #fff; }
+
+    .commentaire-text {
+      background: #111;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      color: #ccc;
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar-custom">
+  <div class="brand">RIDE WITH LAAMARI — Admin</div>
+  <div class="nav-links">
+    <a th:href="@{/admin/dashboard}">Dashboard</a>
+    <a th:href="@{/admin/voitures}">Voitures</a>
+    <a th:href="@{/admin/reservations}">Réservations</a>
+    <a th:href="@{/admin/messages}">Messages</a>
+    <a th:href="@{/admin/avis}" class="active">Avis</a>
+    <form th:action="@{/logout}" method="post" class="d-inline">
+      <button type="submit"
+              style="color:#aaa;background:none;border:none;cursor:pointer;margin-left:25px;">
+        <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="main">
+
+  <h4 class="mb-4">
+    <i class="fas fa-star me-2 text-warning"></i>Gestion des avis
+  </h4>
+
+  <!-- ── Stats ── -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card total">
+        <div class="num" th:text="${statsAvis.total}">0</div>
+        <div class="text-muted small">Total</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card attente">
+        <div class="num" th:text="${statsAvis.enAttente}">0</div>
+        <div class="text-muted small">En attente</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card approuve">
+        <div class="num" th:text="${statsAvis.approuves}">0</div>
+        <div class="text-muted small">Approuvés</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card rejete">
+        <div class="num" th:text="${statsAvis.rejetes}">0</div>
+        <div class="text-muted small">Rejetés</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filtres ── -->
+  <div class="d-flex gap-2 mb-4 flex-wrap">
+    <a th:href="@{/admin/avis(statut='TOUS')}"
+       th:classappend="${statutFiltre == 'TOUS'} ? ' active' : ''"
+       class="filter-btn">
+      Tous
+    </a>
+    <a th:href="@{/admin/avis(statut='EN_ATTENTE')}"
+       th:classappend="${statutFiltre == 'EN_ATTENTE'} ? ' active' : ''"
+       class="filter-btn">
+      <i class="fas fa-clock me-1"></i>En attente
+      <span th:if="${statsAvis.enAttente > 0}"
+            class="badge bg-warning text-dark ms-1"
+            th:text="${statsAvis.enAttente}"></span>
+    </a>
+    <a th:href="@{/admin/avis(statut='APPROUVE')}"
+       th:classappend="${statutFiltre == 'APPROUVE'} ? ' active' : ''"
+       class="filter-btn">
+      <i class="fas fa-check me-1"></i>Approuvés
+    </a>
+    <a th:href="@{/admin/avis(statut='REJETE')}"
+       th:classappend="${statutFiltre == 'REJETE'} ? ' active' : ''"
+       class="filter-btn">
+      <i class="fas fa-times me-1"></i>Rejetés
+    </a>
+  </div>
+
+  <!-- ── Liste des avis ── -->
+  <div th:if="${#lists.isEmpty(avis)}" class="empty-state">
+    <i class="fas fa-star fa-3x mb-3 d-block"></i>
+    <p>Aucun avis dans cette catégorie.</p>
+  </div>
+
+  <div th:each="a : ${avis}">
+    <div class="avis-card"
+         th:classappend="${a.statut}">
+
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+
+        <!-- Infos gauche -->
+        <div>
+          <!-- Voiture -->
+          <h6 class="mb-1">
+            <i class="fas fa-car me-1 text-danger"></i>
+            <span th:text="${a.voiture.marque + ' ' + a.voiture.modele}"></span>
+          </h6>
+          <!-- Client -->
+          <small class="text-muted">
+            <i class="fas fa-user me-1"></i>
+            <span th:text="${a.utilisateur.prenom != null}
+                            ? ${a.utilisateur.prenom + ' ' + a.utilisateur.nom}
+                            : ${a.utilisateur.username}">
+                        </span>
+            &nbsp;·&nbsp;
+            <span th:text="${a.dateAvis}"></span>
+          </small>
+
+          <!-- Étoiles -->
+          <div class="stars mt-2">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:class="${i <= a.note} ? 'fas fa-star' : 'far fa-star empty'"></i>
+                        </span>
+            <span class="ms-2 text-white small fw-bold"
+                  th:text="${a.note + '/5'}"></span>
+          </div>
+        </div>
+
+        <!-- Badge statut + actions droite -->
+        <div class="d-flex flex-column align-items-end gap-2">
+                    <span class="badge"
+                          th:classappend="'badge-' + ${a.statut}"
+                          th:text="${a.statut}"></span>
+
+          <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <!-- Approuver (si pas déjà approuvé) -->
+            <form th:if="${a.statut != 'APPROUVE'}"
+                  th:action="@{/admin/avis/approuver/{id}(id=${a.id})}"
+                  method="post" class="d-inline">
+              <input type="hidden" name="retour"
+                     th:value="${statutFiltre}"/>
+              <button type="submit" class="btn-approuver">
+                <i class="fas fa-check me-1"></i>Approuver
+              </button>
+            </form>
+
+            <!-- Rejeter (si pas déjà rejeté) -->
+            <form th:if="${a.statut != 'REJETE'}"
+                  th:action="@{/admin/avis/rejeter/{id}(id=${a.id})}"
+                  method="post" class="d-inline">
+              <input type="hidden" name="retour"
+                     th:value="${statutFiltre}"/>
+              <button type="submit" class="btn-rejeter">
+                <i class="fas fa-ban me-1"></i>Rejeter
+              </button>
+            </form>
+
+            <!-- Supprimer -->
+            <a th:href="@{/admin/avis/supprimer/{id}(id=${a.id},retour=${statutFiltre})}"
+               class="btn-supprimer"
+               onclick="return confirm('Supprimer cet avis définitivement ?')">
+              <i class="fas fa-trash me-1"></i>Supprimer
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commentaire -->
+      <div th:if="${a.commentaire != null and !#strings.isEmpty(a.commentaire)}"
+           class="commentaire-text">
+        <i class="fas fa-quote-left me-2 text-muted"></i>
+        <span th:text="${a.commentaire}"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

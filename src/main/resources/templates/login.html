@@ -1,42 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Connexion | RIDE WITH LAAMARI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"><title>Connexion - LAAMARI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background: #0d0d0d; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; }
+    .login-card { background: #1a1a1a; border-radius: 16px;
+      padding: 40px; width: 100%; max-width: 420px; }
+    .brand { color: #e63946; font-weight: 900; font-size: 1.5rem;
+      text-align: center; margin-bottom: 30px; }
+    .brand span { color: #fff; }
+    .form-control { background: #2a2a2a; border: 1px solid #444;
+      color: #fff; padding: 12px; border-radius: 8px; }
+    .form-control:focus { background: #2a2a2a; color: #fff;
+      border-color: #e63946; box-shadow: none; }
+    .form-control::placeholder { color: #555; }
+    .form-label { color: #aaa; }
+    .btn-red { background: #e63946; color: #fff; border: none;
+      width: 100%; padding: 12px; border-radius: 8px;
+      font-weight: 700; font-size: 1rem; }
+    .btn-red:hover { background: #c1121f; color: #fff; }
+    .link-red { color: #e63946; text-decoration: none; }
+    .link-red:hover { color: #c1121f; }
+    .divider { border-color: #333; margin: 20px 0; }
+    .input-icon { position: relative; }
+    .input-icon .fas { position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%); color: #555; }
+    .input-icon input { padding-left: 40px; }
+  </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center h-screen">
+<body>
+<div class="login-card">
+  <div class="brand"><span>RIDE WITH </span>LAAMARI</div>
 
-<div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md">
-  <div class="text-center mb-8">
-    <h2 class="text-3xl font-black italic">RIDE WITH <span class="text-red-600">LAAMARI</span></h2>
-    <p class="text-gray-500 uppercase text-xs tracking-widest font-bold mt-2">Espace Privé</p>
+  <!-- Erreur connexion -->
+  <div th:if="${error}"
+       class="alert alert-danger py-2" th:text="${error}"></div>
+
+  <!-- Message déconnexion -->
+  <div th:if="${message}"
+       class="alert alert-success py-2" th:text="${message}"></div>
+
+  <!-- Email vérifié avec succès -->
+  <div th:if="${param['email-verifie']}"
+       class="alert alert-success py-2">
+    <i class="fas fa-check-circle me-2"></i>
+    Email verifie ! Vous pouvez vous connecter.
   </div>
 
-  <div th:if="${param.error}" class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm font-bold">
-    Identifiants incorrects.
+  <!-- Reset mot de passe succès -->
+  <div th:if="${param.reset}"
+       class="alert alert-success py-2">
+    <i class="fas fa-lock me-2"></i>
+    Mot de passe modifie avec succes !
   </div>
 
-  <form th:action="@{/login}" method="post" class="space-y-6">
-    <div>
-      <label class="block text-sm font-bold text-gray-700 mb-2">Nom d'utilisateur</label>
-      <input type="text" name="username" class="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-red-600 outline-none transition" placeholder="Votre pseudo" required>
+  <form th:action="@{/login}" method="post">
+
+    <div class="mb-3">
+      <label class="form-label">Email ou nom d'utilisateur</label>
+      <div class="input-icon">
+        <i class="fas fa-user"></i>
+        <input type="text" name="username" class="form-control"
+               placeholder="votre@email.com ou admin"
+               required autofocus>
+      </div>
     </div>
 
-    <div>
-      <label class="block text-sm font-bold text-gray-700 mb-2">Mot de passe</label>
-      <input type="password" name="password" class="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-red-600 outline-none transition" placeholder="••••••••" required>
+    <div class="mb-2">
+      <label class="form-label">Mot de passe</label>
+      <div class="input-icon">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password" class="form-control"
+               placeholder="••••••••" required>
+      </div>
     </div>
 
-    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg transition duration-300 uppercase tracking-wider">
-      Se Connecter
+    <div class="mb-4 text-end">
+      <a th:href="@{/forgot-password}" class="link-red"
+         style="font-size:.85rem">
+        Mot de passe oublie ?
+      </a>
+    </div>
+
+    <button type="submit" class="btn btn-red">
+      <i class="fas fa-sign-in-alt me-2"></i>Se connecter
     </button>
   </form>
 
-  <div class="mt-8 text-center">
-    <a href="/" class="text-gray-400 hover:text-black text-sm transition">← Retour au site</a>
-  </div>
+  <hr class="divider">
+  <p class="text-center text-muted mb-0" style="font-size:.9rem">
+    Pas encore de compte ?
+    <a th:href="@{/inscription}" class="link-red">S'inscrire</a>
+  </p>
 </div>
-
 </body>
 </html>

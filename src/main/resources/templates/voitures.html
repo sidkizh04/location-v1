@@ -1,25 +1,297 @@
-<div class="p-8">
-    <h1 class="text-3xl font-bold mb-6">Gestion du parc - RIDE WITH LAAMARI</h1>
-    <a href="/admin/voitures/nouveau" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter une voiture</a>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"><title>Catalogue - RIDE WITH LAAMARI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .navbar-custom { background: #111; padding: 15px 40px; }
+    .navbar-brand { color: #fff; font-weight: 900; font-size: 1.3rem; }
+    .navbar-brand span { color: #e63946; }
+    .nav-link-custom { color: #aaa; text-decoration: none;
+      font-weight: 600; transition: color .2s; }
+    .nav-link-custom:hover { color: #e63946; }
+    .btn-connexion { background: #e63946; color: #fff; border: none;
+      border-radius: 25px; padding: 8px 20px; font-weight: 700;
+      text-decoration: none; }
+    .btn-connexion:hover { background: #c1121f; color: #fff; }
+    .btn-logout { background: none; border: 1px solid #555; color: #aaa;
+      border-radius: 25px; padding: 8px 20px; font-weight: 700;
+      cursor: pointer; }
+    .btn-logout:hover { background: #e63946; border-color: #e63946; color: #fff; }
+    .page-header { background: linear-gradient(135deg, #111, #222);
+      color: #fff; padding: 80px 0; text-align: center; }
+    .page-header h1 { font-weight: 900; font-size: 3rem; }
+    .page-header span { color: #e63946; }
+    .car-card { background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.08); transition: all .3s;
+      border: 1px solid #f0f0f0; height: 100%; }
+    .car-card:hover { transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(0,0,0,.15); }
+    .car-card img { width: 100%; height: 220px; object-fit: cover;
+      transition: transform .5s; }
+    .car-card:hover img { transform: scale(1.05); }
+    .car-card .no-img { width: 100%; height: 220px; background: #f0f0f0;
+      display: flex; align-items: center; justify-content: center;
+      color: #ccc; font-size: 4rem; }
+    .img-wrapper { overflow: hidden; position: relative; }
+    .disponible-badge { position: absolute; top: 12px; right: 12px;
+      background: #28a745; color: #fff; font-size: .75rem;
+      padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+    .indispo-badge { position: absolute; top: 12px; right: 12px;
+      background: #dc3545; color: #fff; font-size: .75rem;
+      padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+    .price { color: #e63946; font-weight: 900; font-size: 1.3rem; }
+    .badge-fuel { background: #f0f0f0; color: #666; font-size: .8rem;
+      padding: 5px 10px; border-radius: 20px; }
+    .badge-fuel.diesel { background: #fff3cd; color: #856404; }
+    .badge-fuel.hybride { background: #d1e7dd; color: #0a3622; }
+    .badge-fuel.electrique { background: #cfe2ff; color: #084298; }
+    .btn-detail { background: #f0f0f0; color: #111; border: none;
+      border-radius: 20px; padding: 8px 16px; font-weight: 700;
+      font-size: .85rem; text-decoration: none; transition: all .2s; }
+    .btn-detail:hover { background: #111; color: #fff; }
+    .btn-reserver { background: #111; color: #fff; border: none;
+      border-radius: 20px; padding: 8px 16px; font-weight: 700;
+      font-size: .85rem; text-decoration: none; transition: all .2s; }
+    .btn-reserver:hover { background: #e63946; color: #fff; }
+    footer { background: #111; color: #aaa; text-align: center;
+      padding: 20px; margin-top: 60px; }
+    .filter-bar { background: #fff; border-radius: 16px;
+      padding: 20px 25px; box-shadow: 0 2px 15px rgba(0,0,0,.06);
+      margin-bottom: 30px; }
+    .filter-bar input, .filter-bar select { border: 1px solid #e0e0e0;
+      border-radius: 10px; padding: 10px 15px; font-size: .9rem; }
+    .filter-bar input:focus, .filter-bar select:focus {
+      border-color: #e63946; outline: none;
+      box-shadow: 0 0 0 3px rgba(230,57,70,.1); }
+  </style>
+</head>
+<body>
 
-    <table class="w-full mt-6 border-collapse border">
-        <thead>
-        <tr class="bg-gray-100">
-            <th class="border p-2 text-left">Marque</th>
-            <th class="border p-2 text-left">Modèle</th>
-            <th class="border p-2 text-left">Prix/Jour</th>
-            <th class="border p-2">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="v : ${voitures}">
-            <td class="border p-2" th:text="${v.marque}"></td>
-            <td class="border p-2" th:text="${v.modele}"></td>
-            <td class="border p-2" th:text="${v.prixParJour} + ' €'"></td>
-            <td class="border p-2 text-center">
-                <a th:href="@{/admin/voitures/supprimer/{id}(id=${v.id})}" class="text-red-600">Supprimer</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<!-- NAVBAR -->
+<nav class="navbar navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}">
+      RIDE WITH <span>LAAMARI</span>
+    </a>
+    <div class="d-flex align-items-center gap-4">
+      <a th:href="@{/voitures}" class="nav-link-custom">
+        <i class="fas fa-car me-1"></i>Catalogue
+      </a>
+      <a sec:authorize="hasRole('CLIENT')"
+         th:href="@{/client/dashboard}"
+         class="nav-link-custom">
+        <i class="fas fa-user me-1"></i>Mon espace
+      </a>
+      <a sec:authorize="hasRole('CLIENT')"
+         th:href="@{/client/messages}"
+         class="nav-link-custom">
+        <i class="fas fa-envelope me-1"></i>Messages
+      </a>
+      <a sec:authorize="hasRole('ADMIN')"
+         th:href="@{/admin/dashboard}"
+         class="nav-link-custom">
+        <i class="fas fa-tachometer-alt me-1"></i>Admin
+      </a>
+      <a sec:authorize="isAnonymous()"
+         th:href="@{/login}"
+         class="btn-connexion">
+        Connexion
+      </a>
+      <form sec:authorize="isAuthenticated()"
+            th:action="@{/logout}" method="post" class="d-inline">
+        <button type="submit" class="btn-logout">
+          <i class="fas fa-sign-out-alt me-1"></i>Deconnexion
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>NOTRE <span>CATALOGUE</span></h1>
+  <p class="text-muted mt-2">Choisissez votre vehicule ideal</p>
 </div>
+
+<div class="container py-5">
+
+  <!-- FILTRES -->
+  <div class="filter-bar">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <input type="text" id="searchInput"
+               class="form-control"
+               placeholder="🔍 Rechercher une marque, modele..."
+               onkeyup="filtrer()">
+      </div>
+      <div class="col-md-3">
+        <select id="carburantFilter" class="form-select"
+                onchange="filtrer()">
+          <option value="">Tous les carburants</option>
+          <option value="Essence">Essence</option>
+          <option value="Diesel">Diesel</option>
+          <option value="Hybride">Hybride</option>
+          <option value="Electrique">Electrique</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select id="prixFilter" class="form-select"
+                onchange="filtrer()">
+          <option value="">Tous les prix</option>
+          <option value="50">Moins de 50 MAD/j</option>
+          <option value="100">Moins de 100 MAD/j</option>
+          <option value="200">Moins de 200 MAD/j</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button onclick="resetFiltres()"
+                class="btn btn-outline-secondary w-100">
+          <i class="fas fa-times me-1"></i>Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉSULTAT VIDE -->
+  <div th:if="${#lists.isEmpty(voitures)}" class="text-center py-5">
+    <i class="fas fa-car fa-3x text-muted mb-3 d-block"></i>
+    <p class="text-muted">Aucun vehicule disponible pour le moment.</p>
+  </div>
+
+  <!-- GRILLE VOITURES -->
+  <div class="row g-4" id="voituresGrid"
+       th:unless="${#lists.isEmpty(voitures)}">
+
+    <!-- ✅ FIX : un seul attribut class -->
+    <div class="col-md-4 voiture-item"
+         th:each="v : ${voitures}"
+         th:attr="data-marque=${v.marque},
+                      data-modele=${v.modele},
+                      data-carburant=${v.carburant},
+                      data-prix=${v.prixParJour}">
+      <div class="car-card">
+
+        <div class="img-wrapper">
+          <img th:if="${v.imageUrL != null}"
+               th:src="${v.imageUrL}" th:alt="${v.marque}">
+          <div class="no-img" th:unless="${v.imageUrL != null}">
+            <i class="fas fa-car"></i>
+          </div>
+          <span th:if="${v.disponible}" class="disponible-badge">
+                        Disponible
+                    </span>
+          <span th:unless="${v.disponible}" class="indispo-badge">
+                        Indisponible
+                    </span>
+        </div>
+
+        <div class="p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h5 class="mb-0 fw-bold" th:text="${v.marque}"></h5>
+              <p class="text-muted mb-0" th:text="${v.modele}"></p>
+              <small class="text-muted"
+                     th:if="${v.annee != null}"
+                     th:text="${v.annee}"></small>
+            </div>
+            <div class="text-end">
+              <div class="price"
+                   th:text="${v.prixParJour + ' MAD'}"></div>
+              <small class="text-muted">PAR JOUR</small>
+            </div>
+          </div>
+
+          <div class="mt-2 mb-3">
+                        <span class="badge-fuel"
+                              th:classappend="${v.carburant == 'Diesel'} ? ' diesel' :
+                                             (${v.carburant == 'Hybride'} ? ' hybride' :
+                                             (${v.carburant == 'Electrique'} ? ' electrique' : ''))">
+                            <i th:class="${v.carburant == 'Electrique'} ? 'fas fa-bolt me-1' :
+                                         (${v.carburant == 'Hybride'} ? 'fas fa-leaf me-1' :
+                                         (${v.carburant == 'Diesel'} ? 'fas fa-oil-can me-1' :
+                                         'fas fa-gas-pump me-1'))"></i>
+                            <span th:text="${v.carburant != null ? v.carburant : 'Essence'}"></span>
+                        </span>
+            <span class="badge-fuel ms-1"
+                  th:if="${v.transmission != null}"
+                  th:text="${v.transmission}"></span>
+          </div>
+
+          <div class="d-flex gap-2">
+            <a th:href="@{/voitures/{id}(id=${v.id})}"
+               class="btn-detail flex-grow-1 text-center">
+              <i class="fas fa-eye me-1"></i>Voir detail
+            </a>
+            <a th:if="${v.disponible}"
+               th:href="@{/client/reserver/{id}(id=${v.id})}"
+               class="btn-reserver flex-grow-1 text-center">
+              <i class="fas fa-calendar me-1"></i>Reserver
+            </a>
+            <span th:unless="${v.disponible}"
+                  class="btn-reserver flex-grow-1 text-center"
+                  style="opacity:.5; cursor:not-allowed;">
+                            Indisponible
+                        </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="noResult" class="text-center py-5" style="display:none">
+    <i class="fas fa-search fa-3x text-muted mb-3 d-block"></i>
+    <p class="text-muted">Aucun vehicule ne correspond a votre recherche.</p>
+    <button onclick="resetFiltres()" class="btn btn-outline-danger mt-2">
+      Voir tous les vehicules
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <p class="mb-0">© 2026 RIDE WITH LAAMARI. Tous droits reserves.</p>
+</footer>
+
+<script>
+  function filtrer() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const carburant = document.getElementById('carburantFilter').value;
+    const prix = document.getElementById('prixFilter').value;
+    const items = document.querySelectorAll('.voiture-item');
+    let visible = 0;
+
+    items.forEach(item => {
+      const marque = item.dataset.marque.toLowerCase();
+      const modele = item.dataset.modele.toLowerCase();
+      const carburantItem = item.dataset.carburant;
+      const prixItem = parseFloat(item.dataset.prix);
+
+      const matchSearch = marque.includes(search) || modele.includes(search);
+      const matchCarburant = !carburant || carburantItem === carburant;
+      const matchPrix = !prix || prixItem < parseFloat(prix);
+
+      if (matchSearch && matchCarburant && matchPrix) {
+        item.style.display = 'block';
+        visible++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    document.getElementById('noResult').style.display =
+            visible === 0 ? 'block' : 'none';
+  }
+
+  function resetFiltres() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('carburantFilter').value = '';
+    document.getElementById('prixFilter').value = '';
+    filtrer();
+  }
+</script>
+</body>
+</html>

@@ -6,14 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -23,42 +20,62 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Désactivation CSRF pour la console H2
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**")
-                        .disable()
-                )
-                // 2. Gestion des droits d'accès
                 .authorizeHttpRequests(auth -> auth
-                        // Ressources publiques
-                        .requestMatchers("/", "/index", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
-                        // Autoriser le formulaire de réservation
-                        .requestMatchers("/reserver/**").permitAll()
-                        // Restriction Admin
+                        .requestMatchers(
+                                "/",
+                                "/voitures",
+                                "/voitures/**",
+                                "/login",
+                                "/inscription",
+                                "/verifier-email",
+                                "/forgot-password",
+                                "/reset-password",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/uploads/**",
+                                "/h2-console/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // Tout le reste nécessite une connexion
+                        .requestMatchers("/client/**").hasRole("CLIENT")
                         .anyRequest().authenticated()
                 )
-                // 3. Configuration du formulaire de Login
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?error=true")
+                        // ← Redirige selon le rôle après login
+                        .successHandler((request, response, authentication) -> {
+                            boolean isAdmin = authentication.getAuthorities()
+                                    .stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                            if (isAdmin) {
+                                response.sendRedirect("/admin/dashboard");
+                            } else {
+                                response.sendRedirect("/client/dashboard");
+                            }
+                        })
                         .permitAll()
                 )
-                // 4. Configuration du Logout (Inchangée selon ta demande)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-                // 5. Autoriser les frames pour H2
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                .csrf(csrf -> csrf
+                        // ← CORRIGÉ : ignorer CSRF pour h2-console ET les routes avis
+                        .ignoringRequestMatchers(
+                                "/h2-console/**",
+                                "/admin/avis/**",
+                                "/client/avis/**",
+                                "/admin/reservations/**",
+                                "/admin/messages/**",
+                                "/client/messages/**"
+                        )
+                )
+                .headers(h -> h.frameOptions(f -> f.sameOrigin()));
 
         return http.build();
     }
@@ -69,7 +86,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authManager(
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

@@ -16,21 +16,22 @@ public class LocationApplication {
     }
 
     @Bean
-    CommandLineRunner initDatabase(UtilisateurRepository repository, PasswordEncoder encoder) {
+    CommandLineRunner initDatabase(UtilisateurRepository repository,
+                                   PasswordEncoder encoder) {
         return args -> {
-            // On supprime l'ancien pour être sûr de repartir à zéro
-            repository.findByUsername("admin").ifPresent(repository::delete);
-
-            // On crée le nouvel admin avec le bon encodage
-            Utilisateur admin = new Utilisateur();
-            admin.setUsername("admin");
-            admin.setPassword(encoder.encode("admin123")); // C'est Spring qui crypte ici
-            admin.setRole("ROLE_ADMIN");
-
-            repository.save(admin);
-            System.out.println("-----------------------------------------");
-            System.out.println("UTILISATEUR ADMIN CRÉÉ : admin / admin123");
-            System.out.println("-----------------------------------------");
+            // Créer admin seulement s'il n'existe pas déjà
+            if (repository.findByUsername("admin").isEmpty()) {
+                Utilisateur admin = new Utilisateur();
+                admin.setUsername("admin");
+                admin.setEmail("admin@laamari.com");
+                admin.setNom("Administrateur");
+                admin.setPassword(encoder.encode("admin123"));
+                admin.setRole("ROLE_ADMIN");
+                repository.save(admin);
+                System.out.println("ADMIN CREE : admin / admin123");
+            } else {
+                System.out.println("ADMIN EXISTE DEJA");
+            }
         };
     }
 }

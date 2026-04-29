@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${voiture.marque + ' ' + voiture.modele + ' - LAAMARI'}">
+        Détail Voiture
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in  { animation: fadeIn 0.6s ease forwards; }
+        .spec-card:hover { transform: translateY(-3px); }
+
+        /* ── Étoiles statiques ── */
+        .star-full  { color: #fbbf24; }
+        .star-half  { color: #fbbf24; }
+        .star-empty { color: #d1d5db; }
+
+        /* ── Barre de progression note ── */
+        .bar-bg   { background: #e5e7eb; border-radius: 999px; height: 8px; }
+        .bar-fill { background: #fbbf24; border-radius: 999px; height: 8px;
+            transition: width 0.4s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- NAVBAR -->
+<nav class="fixed w-full z-50 top-0 bg-black bg-opacity-95 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a th:href="@{/}" class="text-2xl font-black italic text-white">
+            RIDE WITH <span class="text-red-600">LAAMARI</span>
+        </a>
+        <div class="flex items-center space-x-6 text-sm font-bold uppercase">
+            <a th:href="@{/voitures}"
+               class="text-gray-300 hover:text-red-600 transition">
+                <i class="fas fa-arrow-left mr-2"></i>Catalogue
+            </a>
+            <a sec:authorize="hasRole('CLIENT')"
+               th:href="@{/client/dashboard}"
+               class="text-gray-300 hover:text-red-600 transition">
+                Mon espace
+            </a>
+            <a sec:authorize="isAnonymous()"
+               th:href="@{/login}"
+               class="bg-red-600 px-5 py-2 rounded-full text-white hover:bg-red-700 transition">
+                Connexion
+            </a>
+            <form sec:authorize="isAuthenticated()"
+                  th:action="@{/logout}" method="post" class="inline">
+                <button type="submit"
+                        class="bg-gray-800 px-5 py-2 rounded-full text-white
+                               hover:bg-red-600 transition border border-gray-600">
+                    Déconnexion
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO IMAGE -->
+<div class="pt-16 relative overflow-hidden bg-black" style="height:500px;">
+    <img th:if="${voiture.imageUrL != null}"
+         th:src="${voiture.imageUrL}" th:alt="${voiture.marque}"
+         class="w-full h-full object-cover opacity-80">
+    <img th:unless="${voiture.imageUrL != null}"
+         src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920"
+         class="w-full h-full object-cover opacity-80" alt="Car">
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
+
+    <!-- Badge disponibilité -->
+    <div class="absolute top-8 right-8">
+        <span th:if="${voiture.disponible}"
+              class="bg-green-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+            <i class="fas fa-check-circle mr-2"></i>Disponible
+        </span>
+        <span th:unless="${voiture.disponible}"
+              class="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+            <i class="fas fa-times-circle mr-2"></i>Indisponible
+        </span>
+    </div>
+
+    <!-- Titre + note rapide sur l'image -->
+    <div class="absolute bottom-8 left-8">
+        <h1 class="text-5xl font-black text-white tracking-tighter">
+            <span th:text="${voiture.marque}"></span>
+            <span class="text-red-500" th:text="${voiture.modele}"></span>
+        </h1>
+        <p class="text-gray-300 text-lg mt-1">
+            <span th:if="${voiture.annee != null}" th:text="${voiture.annee}"></span>
+            <span th:if="${voiture.couleur != null}"
+                  th:text="${' • ' + voiture.couleur}"></span>
+        </p>
+        <!-- ── Note moyenne dans le hero ── -->
+        <div th:if="${nombreAvis != null and nombreAvis > 0}"
+             class="flex items-center gap-2 mt-2">
+            <span class="text-yellow-400 font-black text-xl"
+                  th:text="${moyenneNote}"></span>
+            <div class="flex">
+                <span th:each="i : ${#numbers.sequence(1,5)}">
+                    <i th:class="${i <= moyenneNote} ? 'fas fa-star star-full' : 'far fa-star star-empty'"
+                       class="text-sm"></i>
+                </span>
+            </div>
+            <span class="text-gray-300 text-sm"
+                  th:text="'(' + ${nombreAvis} + ' avis)'"></span>
+        </div>
+    </div>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- Description -->
+            <div th:if="${voiture.description != null}"
+                 class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
+                <h2 class="text-2xl font-black uppercase mb-4">
+                    À propos de ce véhicule
+                </h2>
+                <p class="text-gray-600 leading-relaxed text-lg"
+                   th:text="${voiture.description}"></p>
+            </div>
+
+            <!-- Spécifications -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
+                <h2 class="text-2xl font-black uppercase mb-6">Caractéristiques</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                    <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i th:class="${voiture.carburant == 'Electrique'} ? 'fas fa-bolt text-blue-500 text-3xl mb-3 block' :
+                                     (${voiture.carburant == 'Hybride'} ? 'fas fa-leaf text-green-500 text-3xl mb-3 block' :
+                                     'fas fa-gas-pump text-red-500 text-3xl mb-3 block')"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.carburant != null ? voiture.carburant : 'Essence'}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Carburant</div>
+                    </div>
+
+                    <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-cog text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.transmission != null ? voiture.transmission : 'Automatique'}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Transmission</div>
+                    </div>
+
+                    <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-users text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.nombrePlaces != null ? voiture.nombrePlaces : 5}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Places</div>
+                    </div>
+
+                    <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-door-open text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.nombrePortes != null ? voiture.nombrePortes : 4}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Portes</div>
+                    </div>
+
+                    <div class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-snowflake text-blue-400 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.climatisation != null ? voiture.climatisation : 'Oui'}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Climatisation</div>
+                    </div>
+
+                    <div th:if="${voiture.kilometrage != null}"
+                         class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-tachometer-alt text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900"
+                             th:text="${voiture.kilometrage + ' km'}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Kilometrage</div>
+                    </div>
+
+                    <div th:if="${voiture.annee != null}"
+                         class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-calendar text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900" th:text="${voiture.annee}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Annee</div>
+                    </div>
+
+                    <div th:if="${voiture.couleur != null}"
+                         class="spec-card bg-gray-50 rounded-xl p-5 text-center transition duration-300 border border-gray-100">
+                        <i class="fas fa-palette text-gray-600 text-3xl mb-3 block"></i>
+                        <div class="font-black text-gray-900" th:text="${voiture.couleur}"></div>
+                        <div class="text-gray-400 text-xs uppercase mt-1">Couleur</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inclus -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
+                <h2 class="text-2xl font-black uppercase mb-6">Inclus dans la location</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>Assurance incluse</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>Assistance 24/7</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>Kilométrage illimité</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>Nettoyage inclus</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>GPS disponible</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <span>Livraison possible</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════
+                 SECTION AVIS — NOUVEAU
+            ══════════════════════════════════════════════ -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 animate-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-black uppercase">
+                        Avis clients
+                    </h2>
+                    <!-- Résumé note globale -->
+                    <div th:if="${nombreAvis != null and nombreAvis > 0}"
+                         class="text-right">
+                        <div class="text-4xl font-black text-gray-900"
+                             th:text="${moyenneNote}"></div>
+                        <div class="flex justify-end mt-1">
+                            <span th:each="i : ${#numbers.sequence(1,5)}">
+                                <i th:class="${i <= moyenneNote}
+                                    ? 'fas fa-star star-full'
+                                    : 'far fa-star star-empty'"
+                                   class="text-sm"></i>
+                            </span>
+                        </div>
+                        <div class="text-gray-400 text-xs mt-1"
+                             th:text="${nombreAvis + ' avis vérifiés'}"></div>
+                    </div>
+                </div>
+
+                <!-- Aucun avis -->
+                <div th:if="${#lists.isEmpty(avisApprouves)}"
+                     class="text-center py-10 text-gray-400">
+                    <i class="far fa-star text-4xl mb-3 block"></i>
+                    <p>Aucun avis pour le moment.</p>
+                    <p class="text-sm mt-1">
+                        Soyez le premier à donner votre avis après votre location !
+                    </p>
+                </div>
+
+                <!-- Liste des avis -->
+                <div th:unless="${#lists.isEmpty(avisApprouves)}"
+                     class="space-y-5">
+                    <div th:each="avis : ${avisApprouves}"
+                         class="border border-gray-100 rounded-xl p-5
+                                hover:border-yellow-200 transition duration-200">
+
+                        <div class="flex justify-between items-start">
+                            <!-- Avatar + nom + date -->
+                            <div class="flex items-center gap-3">
+                                <!-- Avatar initiales -->
+                                <div class="w-10 h-10 rounded-full bg-red-600 flex items-center
+                                            justify-center text-white font-black text-sm flex-shrink-0">
+                                    <span th:if="${avis.utilisateur.prenom != null}"
+                                          th:text="${#strings.substring(avis.utilisateur.prenom,0,1)
+                                                   + #strings.substring(avis.utilisateur.nom,0,1)}">
+                                    </span>
+                                    <span th:unless="${avis.utilisateur.prenom != null}"
+                                          th:text="${#strings.substring(avis.utilisateur.username,0,2).toUpperCase()}">
+                                    </span>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 text-sm">
+                                        <span th:if="${avis.utilisateur.prenom != null}"
+                                              th:text="${avis.utilisateur.prenom
+                                                       + ' ' + avis.utilisateur.nom}">
+                                        </span>
+                                        <span th:unless="${avis.utilisateur.prenom != null}"
+                                              th:text="${avis.utilisateur.username}">
+                                        </span>
+                                    </div>
+                                    <div class="text-gray-400 text-xs"
+                                         th:text="${avis.dateAvis}"></div>
+                                </div>
+                            </div>
+
+                            <!-- Étoiles -->
+                            <div class="flex items-center gap-1">
+                                <span th:each="i : ${#numbers.sequence(1,5)}">
+                                    <i th:class="${i <= avis.note}
+                                        ? 'fas fa-star star-full text-sm'
+                                        : 'far fa-star star-empty text-sm'"></i>
+                                </span>
+                                <span class="text-gray-500 text-xs ml-1 font-bold"
+                                      th:text="${avis.note + '/5'}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Commentaire -->
+                        <p th:if="${avis.commentaire != null
+                                   and !#strings.isEmpty(avis.commentaire)}"
+                           class="text-gray-600 text-sm mt-3 leading-relaxed"
+                           th:text="${avis.commentaire}">
+                        </p>
+
+                        <!-- Badge location vérifiée -->
+                        <div class="mt-3">
+                            <span class="inline-flex items-center gap-1 bg-green-50
+                                         text-green-700 text-xs px-2 py-1 rounded-full
+                                         border border-green-200">
+                                <i class="fas fa-check-circle text-xs"></i>
+                                Location vérifiée
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ── FIN SECTION AVIS ── -->
+
+        </div>
+
+        <!-- COLONNE DROITE : Prix + Réservation -->
+        <div class="lg:col-span-1">
+            <div class="sticky top-24 space-y-6">
+
+                <!-- Card Prix -->
+                <div class="bg-black text-white rounded-2xl p-8 shadow-xl animate-in">
+                    <div class="text-center mb-6">
+                        <div class="text-5xl font-black text-red-500"
+                             th:text="${voiture.prixParJour + ' MAD'}"></div>
+                        <div class="text-gray-400 uppercase text-sm tracking-widest mt-1">
+                            par jour
+                        </div>
+                        <!-- Note dans la card prix -->
+                        <div th:if="${nombreAvis != null and nombreAvis > 0}"
+                             class="flex items-center justify-center gap-1 mt-2">
+                            <span th:each="i : ${#numbers.sequence(1,5)}">
+                                <i th:class="${i <= moyenneNote}
+                                    ? 'fas fa-star text-yellow-400 text-xs'
+                                    : 'far fa-star text-gray-600 text-xs'"></i>
+                            </span>
+                            <span class="text-gray-400 text-xs ml-1"
+                                  th:text="${moyenneNote + ' (' + nombreAvis + ')'}"></span>
+                        </div>
+                    </div>
+
+                    <!-- Calcul rapide -->
+                    <div class="bg-gray-900 rounded-xl p-4 mb-6">
+                        <label class="text-gray-400 text-sm mb-2 block">
+                            Estimation rapide
+                        </label>
+                        <select id="dureeSelect" onchange="calculer()"
+                                class="w-full bg-gray-800 text-white border
+                                       border-gray-700 rounded-lg p-2 mb-3">
+                            <option value="1">1 jour</option>
+                            <option value="3">3 jours</option>
+                            <option value="7">1 semaine</option>
+                            <option value="14">2 semaines</option>
+                            <option value="30">1 mois</option>
+                        </select>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">Total estimé :</span>
+                            <span id="totalEstime"
+                                  class="text-red-500 font-black text-xl"></span>
+                        </div>
+                    </div>
+
+                    <!-- Bouton réserver -->
+                    <div th:if="${voiture.disponible}">
+                        <a sec:authorize="isAnonymous()"
+                           th:href="@{/login}"
+                           class="block w-full bg-red-600 hover:bg-red-700 text-white
+                                  text-center py-4 rounded-xl font-black text-lg
+                                  transition duration-300 uppercase">
+                            <i class="fas fa-lock mr-2"></i>Connectez-vous
+                        </a>
+                        <a sec:authorize="hasRole('CLIENT')"
+                           th:href="@{/client/reserver/{id}(id=${voiture.id})}"
+                           class="block w-full bg-red-600 hover:bg-red-700 text-white
+                                  text-center py-4 rounded-xl font-black text-lg
+                                  transition duration-300 uppercase">
+                            <i class="fas fa-calendar-check mr-2"></i>Réserver maintenant
+                        </a>
+                        <p class="text-gray-500 text-xs text-center mt-3">
+                            <i class="fas fa-lock mr-1"></i>Réservation sécurisée
+                        </p>
+                    </div>
+                    <div th:unless="${voiture.disponible}"
+                         class="bg-gray-800 text-gray-500 text-center py-4
+                                rounded-xl font-black text-lg cursor-not-allowed">
+                        <i class="fas fa-times-circle mr-2"></i>Indisponible
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="font-black uppercase mb-4">Une question ?</h3>
+                    <div class="space-y-3">
+                        <a href="tel:+212600000000"
+                           class="flex items-center gap-3 text-gray-600
+                                  hover:text-red-600 transition">
+                            <div class="w-10 h-10 bg-red-100 rounded-full
+                                        flex items-center justify-center">
+                                <i class="fas fa-phone text-red-600"></i>
+                            </div>
+                            <span class="font-medium">+212 6XX XXX XXX</span>
+                        </a>
+                        <a th:href="@{/client/messages}"
+                           sec:authorize="hasRole('CLIENT')"
+                           class="flex items-center gap-3 text-gray-600
+                                  hover:text-red-600 transition">
+                            <div class="w-10 h-10 bg-red-100 rounded-full
+                                        flex items-center justify-center">
+                                <i class="fas fa-comment text-red-600"></i>
+                            </div>
+                            <span class="font-medium">Envoyer un message</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTRES VOITURES -->
+    <div th:if="${!#lists.isEmpty(autresVoitures)}" class="mt-16">
+        <h2 class="text-3xl font-black uppercase mb-8">
+            Vous aimerez aussi <span class="text-red-600">...</span>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div th:each="v : ${autresVoitures}"
+                 class="bg-white rounded-2xl shadow-lg overflow-hidden group
+                        hover:shadow-xl transition duration-300 border border-gray-100">
+                <div class="h-48 overflow-hidden relative">
+                    <img th:src="${v.imageUrL != null ? v.imageUrL :
+                                  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'}"
+                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                         th:alt="${v.marque}">
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-black text-lg" th:text="${v.marque}"></h3>
+                            <p class="text-gray-500" th:text="${v.modele}"></p>
+                        </div>
+                        <span class="text-red-600 font-black text-xl"
+                              th:text="${v.prixParJour + ' MAD/j'}"></span>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-gray-400 text-sm">
+                            <i th:class="${v.carburant == 'Electrique'} ? 'fas fa-bolt mr-1' :
+                                         (${v.carburant == 'Hybride'} ? 'fas fa-leaf mr-1' :
+                                         'fas fa-gas-pump mr-1')"></i>
+                            <span th:text="${v.carburant != null ? v.carburant : 'Essence'}"></span>
+                        </span>
+                        <a th:href="@{/voitures/{id}(id=${v.id})}"
+                           class="bg-black text-white px-4 py-2 rounded-lg text-sm
+                                  font-bold hover:bg-red-600 transition">
+                            Voir détail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-black text-white py-10 text-center mt-16">
+    <p class="text-gray-500 text-sm">
+        &copy; 2026 RIDE WITH LAAMARI. Tous droits réservés.
+    </p>
+</footer>
+
+<script th:inline="javascript">
+    const prixParJour = [[${voiture.prixParJour}]];
+    function calculer() {
+        const duree = parseInt(document.getElementById('dureeSelect').value);
+        document.getElementById('totalEstime').textContent =
+            (duree * prixParJour).toFixed(2) + ' MAD';
+    }
+    calculer();
+</script>
+</body>
+</html>
