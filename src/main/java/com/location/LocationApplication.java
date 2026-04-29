@@ -17,7 +17,7 @@ public class LocationApplication {
 
     @Bean
     CommandLineRunner initDatabase(UtilisateurRepository repository,
-                                   PasswordEncoder encoder) {
+            PasswordEncoder encoder) {
         return args -> {
             // Créer admin seulement s'il n'existe pas déjà
             if (repository.findByUsername("admin").isEmpty()) {
