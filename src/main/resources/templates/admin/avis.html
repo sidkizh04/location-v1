@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"><title>Gestion des avis - LAAMARI</title>
+  <meta charset="UTF-8"><title th:text="#{admin.nav.reviews}">Gestion des avis - LAAMARI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -128,17 +128,17 @@
 
 <!-- NAVBAR -->
 <div class="navbar-custom">
-  <div class="brand">RIDE WITH LAAMARI — Admin</div>
+  <div class="brand">RIDE WITH LAAMARI — <span th:text="#{nav.admin}">Admin</span></div>
   <div class="nav-links">
-    <a th:href="@{/admin/dashboard}">Dashboard</a>
-    <a th:href="@{/admin/voitures}">Voitures</a>
-    <a th:href="@{/admin/reservations}">Réservations</a>
-    <a th:href="@{/admin/messages}">Messages</a>
-    <a th:href="@{/admin/avis}" class="active">Avis</a>
+    <a th:href="@{/admin/dashboard}" th:text="#{admin.nav.dashboard}">Dashboard</a>
+    <a th:href="@{/admin/voitures}" th:text="#{admin.nav.cars}">Voitures</a>
+    <a th:href="@{/admin/reservations}" th:text="#{admin.nav.reservations}">Réservations</a>
+    <a th:href="@{/admin/messages}" th:text="#{admin.nav.messages}">Messages</a>
+    <a th:href="@{/admin/avis}" class="active" th:text="#{admin.nav.reviews}">Avis</a>
     <form th:action="@{/logout}" method="post" class="d-inline">
       <button type="submit"
               style="color:#aaa;background:none;border:none;cursor:pointer;margin-left:25px;">
-        <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+        <i class="fas fa-sign-out-alt me-1"></i><span th:text="#{nav.logout}">Déconnexion</span>
       </button>
     </form>
   </div>
@@ -147,7 +147,7 @@
 <div class="main">
 
   <h4 class="mb-4">
-    <i class="fas fa-star me-2 text-warning"></i>Gestion des avis
+    <i class="fas fa-star me-2 text-warning"></i><span th:text="#{admin.dash.reviews_manage}">Gestion des avis</span>
   </h4>
 
   <!-- ── Stats ── -->
@@ -161,19 +161,19 @@
     <div class="col-6 col-md-3">
       <div class="stat-card attente">
         <div class="num" th:text="${statsAvis.enAttente}">0</div>
-        <div class="text-muted small">En attente</div>
+        <div class="text-muted small" th:text="#{admin.dash.reviews_pending}">En attente</div>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-card approuve">
         <div class="num" th:text="${statsAvis.approuves}">0</div>
-        <div class="text-muted small">Approuvés</div>
+        <div class="text-muted small" th:text="#{admin.dash.reviews_approved}">Approuvés</div>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-card rejete">
         <div class="num" th:text="${statsAvis.rejetes}">0</div>
-        <div class="text-muted small">Rejetés</div>
+        <div class="text-muted small" th:text="#{admin.dash.reviews_rejected}">Rejetés</div>
       </div>
     </div>
   </div>

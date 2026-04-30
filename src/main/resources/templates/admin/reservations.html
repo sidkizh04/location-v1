@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Réservations</title>
+    <meta charset="UTF-8"><title th:text="#{admin.nav.reservations}">Réservations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -49,40 +49,48 @@
 </head>
 <body>
 <div class="sidebar">
-    <div class="brand"><i class="fas fa-car"></i> LAAMARI ADMIN</div>
+    <div class="brand"><i class="fas fa-car"></i> LAAMARI <span th:text="#{nav.admin}">ADMIN</span></div>
+    <div class="d-flex justify-content-center mb-4 text-secondary" style="font-size: 0.9rem;">
+        <a href="?lang=fr" class="text-secondary text-decoration-none mx-1">FR</a> |
+        <a href="?lang=en" class="text-secondary text-decoration-none mx-1">EN</a> |
+        <a href="?lang=ar" class="text-secondary text-decoration-none mx-1">AR</a>
+    </div>
     <a th:href="@{/admin/dashboard}">
-        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        <i class="fas fa-tachometer-alt me-2"></i><span th:text="#{admin.nav.dashboard}">Dashboard</span>
     </a>
     <a th:href="@{/admin/voitures}">
-        <i class="fas fa-car me-2"></i>Voitures
+        <i class="fas fa-car me-2"></i><span th:text="#{admin.nav.cars}">Voitures</span>
     </a>
     <a th:href="@{/admin/reservations}" class="active">
-        <i class="fas fa-calendar me-2"></i>Reservations
+        <i class="fas fa-calendar me-2"></i><span th:text="#{admin.nav.reservations}">Reservations</span>
     </a>
     <a th:href="@{/admin/messages}">
-        <i class="fas fa-envelope me-2"></i>Messages
+        <i class="fas fa-envelope me-2"></i><span th:text="#{admin.nav.messages}">Messages</span>
+    </a>
+    <a th:href="@{/admin/avis}">
+        <i class="fas fa-star me-2"></i><span th:text="#{admin.nav.reviews}">Avis</span>
     </a>
     <form th:action="@{/logout}" method="post">
         <button type="submit" class="logout-btn">
-            <i class="fas fa-sign-out-alt me-2"></i>Deconnexion
+            <i class="fas fa-sign-out-alt me-2"></i><span th:text="#{nav.logout}">Deconnexion</span>
         </button>
     </form>
 </div>
 
 <div class="main-content">
-    <h2 class="mb-4">Gestion des Reservations</h2>
+    <h2 class="mb-4" th:text="#{admin.res.header}">Gestion des Reservations</h2>
     <div class="table-responsive">
         <table class="table table-dark table-hover">
             <thead class="table-danger">
             <tr>
                 <th>#</th>
-                <th>Client</th>
-                <th>Voiture</th>
-                <th>Debut</th>
-                <th>Fin</th>
-                <th>Prix</th>
-                <th>Statut</th>
-                <th>Actions</th>
+                <th th:text="#{admin.res.client}">Client</th>
+                <th th:text="#{admin.res.car}">Voiture</th>
+                <th th:text="#{admin.res.start}">Debut</th>
+                <th th:text="#{admin.res.end}">Fin</th>
+                <th th:text="#{admin.res.price}">Prix</th>
+                <th th:text="#{admin.res.status}">Statut</th>
+                <th th:text="#{admin.res.actions}">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -136,18 +144,19 @@
                                     style="width:130px"
                                     onchange="this.form.submit()">
                                 <option th:selected="${r.statut == 'EN_ATTENTE'}"
-                                        value="EN_ATTENTE">En attente</option>
+                                        value="EN_ATTENTE" th:text="#{status.pending}">En attente</option>
                                 <option th:selected="${r.statut == 'CONFIRMEE'}"
-                                        value="CONFIRMEE">Confirmee</option>
+                                        value="CONFIRMEE" th:text="#{status.confirmed}">Confirmee</option>
                                 <option th:selected="${r.statut == 'ANNULEE'}"
-                                        value="ANNULEE">Annulee</option>
+                                        value="ANNULEE" th:text="#{status.cancelled}">Annulee</option>
                             </select>
                         </form>
 
                         <!-- Supprimer -->
                         <a th:href="@{/admin/reservations/supprimer/{id}(id=${r.id})}"
                            class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('Supprimer cette reservation ?')">
+                           th:data-confirm="#{admin.res.confirm_delete}"
+                           onclick="return confirm(this.getAttribute('data-confirm'))">
                             <i class="fas fa-trash"></i>
                         </a>
                     </div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Réservation - LAAMARI</title>
+    <meta charset="UTF-8"><title th:text="#{client.res.title}">Réservation - LAAMARI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -65,21 +65,21 @@
     <div class="brand">RIDE WITH LAAMARI</div>
     <div class="nav-links">
         <a th:href="@{/voitures}">
-            <i class="fas fa-arrow-left me-1"></i>Catalogue
+            <i class="fas fa-arrow-left me-1"></i><span th:text="#{nav.home}">Catalogue</span>
         </a>
         <a th:href="@{/client/dashboard}">
-            <i class="fas fa-home me-1"></i>Dashboard
+            <i class="fas fa-home me-1"></i><span th:text="#{nav.myspace}">Dashboard</span>
         </a>
         <form th:action="@{/logout}" method="post" class="d-inline">
             <button type="submit" class="logout-btn">
-                <i class="fas fa-sign-out-alt me-1"></i>Deconnexion
+                <i class="fas fa-sign-out-alt me-1"></i><span th:text="#{nav.logout}">Deconnexion</span>
             </button>
         </form>
     </div>
 </div>
 
 <div class="main">
-    <h2 class="mb-4">Reserver un vehicule</h2>
+    <h2 class="mb-4" th:text="#{client.res.header}">Reserver un vehicule</h2>
 
     <!-- Aperçu voiture -->
     <div class="car-preview">
@@ -92,12 +92,12 @@
             <div>
                 <h4 class="mb-0"
                     th:text="${voiture.marque + ' ' + voiture.modele}"></h4>
-                <span class="text-muted small">Disponible</span>
+                <span class="text-muted small" th:text="#{status.available}">Disponible</span>
             </div>
             <div class="text-end">
                 <span class="text-danger fw-bold fs-4"
                       th:text="${voiture.prixParJour + ' MAD'}"></span>
-                <div class="text-muted small">par jour</div>
+                <div class="text-muted small" th:text="#{car.perday}">par jour</div>
             </div>
         </div>
     </div>
@@ -109,23 +109,23 @@
         <!-- ÉTAPE 1 : Informations personnelles -->
         <div class="section-title">
             <span class="step-number">1</span>
-            Informations personnelles
+            <span th:text="#{client.res.personal_info}">Informations personnelles</span>
         </div>
         <div class="row g-3 mb-4">
             <div class="col-md-6">
-                <label class="form-label">Nom *</label>
+                <label class="form-label" th:text="#{signup.nom}">Nom *</label>
                 <input type="text" name="nom" class="form-control"
                        th:value="${client.nom}"
                        placeholder="Votre nom" required>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Prenom *</label>
+                <label class="form-label" th:text="#{signup.prenom}">Prenom *</label>
                 <input type="text" name="prenom" class="form-control"
                        th:value="${client.prenom}"
                        placeholder="Votre prenom" required>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Telephone *</label>
+                <label class="form-label" th:text="#{client.res.phone}">Telephone *</label>
                 <input type="tel" name="telephone" class="form-control"
                        placeholder="Ex: 0612345678" required>
             </div>
@@ -238,16 +238,16 @@
         <!-- ÉTAPE 4 : Dates -->
         <div class="section-title">
             <span class="step-number">4</span>
-            Periode de location
+            <span th:text="#{client.res.period}">Periode de location</span>
         </div>
         <div class="row g-3 mb-3">
             <div class="col-md-6">
-                <label class="form-label">Date de debut *</label>
+                <label class="form-label" th:text="#{client.res.start_date}">Date de debut *</label>
                 <input type="date" name="dateDebut" class="form-control"
                        required onchange="calculerPrix()">
             </div>
             <div class="col-md-6">
-                <label class="form-label">Date de fin *</label>
+                <label class="form-label" th:text="#{client.res.end_date}">Date de fin *</label>
                 <input type="date" name="dateFin" class="form-control"
                        required onchange="calculerPrix()">
             </div>
@@ -255,17 +255,17 @@
 
         <!-- Prix calculé -->
         <div class="price-box" id="priceBox" style="display:none">
-            <div class="text-white-50 mb-1 small">PRIX TOTAL ESTIME</div>
+            <div class="text-white-50 mb-1 small" th:text="#{detail.total_est}">PRIX TOTAL ESTIME</div>
             <div class="total text-white" id="totalPrice">0 MAD</div>
             <div class="text-white-50 small mt-1" id="nbJours"></div>
         </div>
 
         <div class="d-flex gap-3 mt-4">
             <button type="submit" class="btn btn-red">
-                <i class="fas fa-check me-2"></i>Confirmer la reservation
+                <i class="fas fa-check me-2"></i><span th:text="#{client.res.confirm}">Confirmer la reservation</span>
             </button>
             <a th:href="@{/voitures}" class="btn btn-outline-light">
-                Annuler
+                <span th:text="#{client.dash.cancel}">Annuler</span>
             </a>
         </div>
     </form>

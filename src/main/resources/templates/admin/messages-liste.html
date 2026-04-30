@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Messages</title>
+    <meta charset="UTF-8"><title th:text="#{admin.nav.messages}">Messages</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -27,24 +27,30 @@
 </head>
 <body>
 <div class="sidebar">
-    <div class="brand"><i class="fas fa-car"></i> LAAMARI ADMIN</div>
-    <a th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-    <a th:href="@{/admin/voitures}"><i class="fas fa-car me-2"></i>Voitures</a>
-    <a th:href="@{/admin/reservations}"><i class="fas fa-calendar me-2"></i>Réservations</a>
-    <a th:href="@{/admin/messages}" class="active"><i class="fas fa-envelope me-2"></i>Messages</a>
+    <div class="brand"><i class="fas fa-car"></i> LAAMARI <span th:text="#{nav.admin}">ADMIN</span></div>
+    <div class="d-flex justify-content-center mb-4 text-secondary" style="font-size: 0.9rem;">
+        <a href="?lang=fr" class="text-secondary text-decoration-none mx-1">FR</a> |
+        <a href="?lang=en" class="text-secondary text-decoration-none mx-1">EN</a> |
+        <a href="?lang=ar" class="text-secondary text-decoration-none mx-1">AR</a>
+    </div>
+    <a th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt me-2"></i><span th:text="#{admin.nav.dashboard}">Dashboard</span></a>
+    <a th:href="@{/admin/voitures}"><i class="fas fa-car me-2"></i><span th:text="#{admin.nav.cars}">Voitures</span></a>
+    <a th:href="@{/admin/reservations}"><i class="fas fa-calendar me-2"></i><span th:text="#{admin.nav.reservations}">Réservations</span></a>
+    <a th:href="@{/admin/messages}" class="active"><i class="fas fa-envelope me-2"></i><span th:text="#{admin.nav.messages}">Messages</span></a>
+    <a th:href="@{/admin/avis}"><i class="fas fa-star me-2"></i><span th:text="#{admin.nav.reviews}">Avis</span></a>
     <form th:action="@{/logout}" method="post">
         <button type="submit" class="logout-btn">
-            <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+            <i class="fas fa-sign-out-alt me-2"></i><span th:text="#{nav.logout}">Déconnexion</span>
         </button>
     </form>
 </div>
 
 <div class="main-content">
-    <h2 class="mb-4">Messagerie — Clients</h2>
+    <h2 class="mb-4" th:text="#{admin.msg.header}">Messagerie — Clients</h2>
     <div th:if="${clients == null or #lists.isEmpty(clients)}"
          class="text-center text-muted py-5">
         <i class="fas fa-users fa-3x mb-3 d-block"></i>
-        <p>Aucun client inscrit pour le moment.</p>
+        <p th:text="#{admin.msg.empty}">Aucun client inscrit pour le moment.</p>
     </div>
     <div th:unless="${clients == null or #lists.isEmpty(clients)}">
         <div th:each="c : ${clients}">
@@ -56,7 +62,7 @@
                     <div>
                         <div class="fw-bold" th:text="${c.username}"></div>
                         <small class="text-muted"
-                               th:text="${c.email != null ? c.email : 'Pas d email'}"></small>
+                               th:text="${c.email != null ? c.email : #{admin.msg.no_email}}"></small>
                     </div>
                     <i class="fas fa-chevron-right ms-auto text-muted"></i>
                 </div>
